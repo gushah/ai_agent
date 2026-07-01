@@ -1,0 +1,30 @@
+# Virtual environment — never commit this (huge, machine-specific)
+.venv/
+
+# ChromaDB data — local vector database files, not source code
+chroma_db/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment variable files — NEVER commit API keys
+.env
+.env.*
+*.env
+
+# macOS system files
+.DS_Store
+
+# Editor/IDE folders
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Pytest cache
+.pytest_cache/
