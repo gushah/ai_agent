@@ -22,7 +22,7 @@ source .venv/bin/activate
 
 ### Step 4 — Install dependencies
 ```bash
-pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements.txt
 ```
 
 ### Step 5 — Set your API key
@@ -54,6 +54,13 @@ You should see: `URL: http://localhost:8001/mcp`
 ### Step 7 — Open the interactive docs
 Go to http://127.0.0.1:8000/docs in your browser.
 Every endpoint is listed there. You can run them directly from the browser — no curl needed.
+
+### Step 8 — (Optional) Chat from the terminal
+Instead of Swagger UI, you can use the CLI client — it supports all 4 flows:
+```bash
+.venv/bin/python chat_cli.py
+```
+Commands: `/chat` `/rag` `/mcp` `/multi` `/steps` `/seed` `/new` `/quit`
 
 ---
 

@@ -94,3 +94,73 @@ YOUR QUESTION
 3. [setup.md](docs/setup.md) — get it running
 4. [walkthrough.md](docs/walkthrough.md) — run each endpoint yourself, see the output
 5. [how-it-works.md](docs/how-it-works.md) — now that you've seen it work, the diagrams will make sense
+
+---
+
+## Trying It — Terminal Chat Client
+
+Instead of using `/docs` (Swagger UI) or raw `curl`, you can chat with all 4 flows directly in a terminal.
+
+**Terminal 1 — server:**
+```bash
+export GEMINI_API_KEY="your-key"
+.venv/bin/python -m uvicorn main:app --reload --port 8000
+```
+
+**Terminal 2 — chat:**
+```bash
+.venv/bin/python chat_cli.py
+```
+
+You get a prompt where you can switch between all 4 flows:
+
+```
+────────────────────────────────────────────────────────────────────────────────
+  AI Agent CLI  —  all 4 flows in one terminal
+  Mode commands : /chat  /rag  /mcp  /multi
+  Other commands: /steps  /seed  /new  /quit
+────────────────────────────────────────────────────────────────────────────────
+
+[chat] You: What is RAG?
+Agent: RAG (Retrieval-Augmented Generation) is...
+  (4 steps — type /steps to see the reasoning chain)
+
+[chat] You: Give me a real-world example     ← follow-up works (session memory)
+[chat] You: /seed                             ← load sample Acme Corp docs
+[chat] You: /rag                              ← switch to RAG mode
+[rag]  You: What is the return policy?
+Agent: Customers may return any unused item within 30 days...
+  (searched 3 doc(s) from KB — type /steps to see which)
+
+[rag]  You: /steps                            ← see which docs were retrieved
+[rag]  You: /mcp                              ← switch to MCP mode
+[mcp]  You: What are the shipping costs?      ← LLM picks Google or ChromaDB
+[mcp]  You: /multi                            ← switch to Multi-Agent
+[multi] You: Summarise Acme's policies        ← 3 agents collaborate
+[multi] You: /steps                           ← see each agent's individual answer
+```
+
+**What you see in Terminal 1** while chatting:
+```
+INFO     [chat] ▶  message='What is RAG?'  session=new  history=0 turns
+INFO     [runner] Calling Gemini (gemini-2.5-flash) ...
+INFO     [runner] Got 4 steps from Gemini
+INFO     [runner]   [0] user   → User Question
+INFO     [runner]   [1] agent  → Thought  (280 chars)
+INFO     [runner]   [2] agent  → Google Search  queries=['what is RAG AI']
+INFO     [runner]   [3] agent  → Final Answer  (512 chars)
+INFO     [chat] ✓  4 steps  |  answer: RAG (Retrieval-Augmented Generation)...
+```
+
+Terminal 1 shows the agent's internal reasoning in real time — what it searched for, how many results it got, and how long its answer was.
+
+---
+
+## Key Features
+
+| Feature | Detail |
+|---|---|
+| **Conversation memory** | `POST /chat` keeps the last 5 turns per session. Pass `session_id` from the response back to continue a conversation. |
+| **Async routes** | All endpoints are `async def` with `asyncio.to_thread()` for blocking Gemini/ChromaDB calls — the event loop never blocks. |
+| **Server-side logging** | Every request logs agent steps to Terminal 1 in real time. |
+| **78 tests** | All flows tested without a real API key using mocks and in-memory ChromaDB. |
