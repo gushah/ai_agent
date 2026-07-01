@@ -14,22 +14,27 @@ from app.agent.parser import extract_final_answer, parse_step
 from app.models.schemas import AgentStep, ChatResponse
 
 
-def run_agent(message: str, model: str) -> ChatResponse:
+def run_agent(message: str, model: str, tools: list | None = None) -> ChatResponse:
     """
     Send `message` to the Gemini agent and return the full ChatResponse.
 
+    Args:
+        tools: Override the default tools list. If None, uses config.TOOLS
+               (google_search only). Pass custom tools to add MCP servers.
+
     Flow inside the Gemini API:
       1. Your message is wrapped in a user_input step.
-      2. The LLM may call tools (google_search) one or more times.
+      2. The LLM may call tools (google_search, mcp_server, etc.) one or more times.
       3. Each tool call produces a tool_result step.
       4. The LLM reasons and finally produces a model_output step.
       5. We parse every step and return them all.
     """
+    active_tools = tools if tools is not None else TOOLS
     try:
         interaction = get_client().interactions.create(
             model=model,
             input=message,
-            tools=TOOLS,
+            tools=active_tools,
             generation_config=GENERATION_CONFIG,
         )
     except Exception as exc:

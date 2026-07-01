@@ -14,6 +14,8 @@ from google.genai._gaos.types.interactions.step import (
     FunctionResultStep,
     GoogleSearchCallStep,
     GoogleSearchResultStep,
+    MCPServerToolCallStep,
+    MCPServerToolResultStep,
     ModelOutputStep,
     ThoughtStep,
     UserInputStep,
@@ -150,6 +152,49 @@ def _parse_function_result(index: int, step: FunctionResultStep) -> AgentStep:
     )
 
 
+def _parse_mcp_tool_call(index: int, step: MCPServerToolCallStep) -> AgentStep:
+    name = getattr(step, "name", "unknown")          # tool function name
+    args = getattr(step, "arguments", {}) or {}
+    server = getattr(step, "server_name", "knowledge_base")
+    return AgentStep(
+        step_index=index,
+        step_type="mcp_server_tool_call",
+        role="agent",
+        label=f"MCP Tool Call → {name}",
+        detail=(
+            f"The LLM decided to call '{name}' on the MCP server '{server}'. "
+            f"MCP is a standard protocol — the LLM sends the call, "
+            f"the MCP server runs the function against ChromaDB and returns results. "
+            f"Args: {args}"
+        ),
+        data={"tool": name, "server": server, "arguments": str(args)[:500]},
+    )
+
+
+def _parse_mcp_tool_result(index: int, step: MCPServerToolResultStep) -> AgentStep:
+    content = getattr(step, "content", None)
+    output_text = ""
+    if content:
+        if isinstance(content, list):
+            for item in content:
+                if hasattr(item, "text") and item.text:
+                    output_text += item.text
+        else:
+            output_text = str(content)
+    preview = output_text[:400] + ("..." if len(output_text) > 400 else "")
+    return AgentStep(
+        step_index=index,
+        step_type="mcp_server_tool_result",
+        role="tool",
+        label="MCP Tool Result ← Knowledge Base",
+        detail=(
+            "The MCP server executed the tool function (e.g. searched ChromaDB) "
+            "and returned the result to the LLM. The LLM will now use this to compose its answer."
+        ),
+        data={"output_preview": preview},
+    )
+
+
 def _parse_model_output(index: int, step: ModelOutputStep) -> AgentStep:
     text = _text_from_content_list(step.content or [])
     preview = text[:300] + ("..." if len(text) > 300 else "")
@@ -204,6 +249,10 @@ def parse_step(index: int, step: Any) -> AgentStep:
         return _parse_function_call(index, step)
     if isinstance(step, FunctionResultStep):
         return _parse_function_result(index, step)
+    if isinstance(step, MCPServerToolCallStep):
+        return _parse_mcp_tool_call(index, step)
+    if isinstance(step, MCPServerToolResultStep):
+        return _parse_mcp_tool_result(index, step)
     if isinstance(step, ModelOutputStep):
         return _parse_model_output(index, step)
     return _parse_unknown(index, step)

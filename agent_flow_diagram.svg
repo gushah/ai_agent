@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1560" font-family="Segoe UI, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1980" font-family="Segoe UI, Arial, sans-serif">
   <rect width="980" height="1560" fill="#0f1117" rx="16"/>
 
   <!-- ═══════════════════════════════════════ TITLE ══ -->
@@ -271,6 +271,103 @@
   <line x1="800" y1="1504" x2="840" y2="1504" stroke="#3fb950" stroke-width="2"/><text x="850" y="1508" font-size="10" fill="#8b949e">Final answers</text>
   <rect x="40" y="1520" width="12" height="12" rx="2" fill="none" stroke="#d2a8ff" stroke-dasharray="4,2" stroke-width="1.5"/>
   <text x="60" y="1531" font-size="10" fill="#8b949e">Dashed border = hidden from end-users (thought steps inside the LLM)</text>
+
+  <!-- ═══════════════════════════════════════ SECTION 5: MCP ══ -->
+  <rect x="20" y="1456" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1475" text-anchor="middle" font-size="13" font-weight="bold" fill="#79c0ff">⑤ MCP FLOW — POST /mcp-chat   (LLM picks its own tools: Google Search OR ChromaDB)</text>
+
+  <!-- what is MCP box -->
+  <rect x="20" y="1495" width="940" height="44" rx="7" fill="#161b22" stroke="#79c0ff" stroke-width="1"/>
+  <text x="40" y="1514" font-size="11" font-weight="bold" fill="#79c0ff">What is MCP?</text>
+  <text x="150" y="1514" font-size="10" fill="#8b949e">Model Context Protocol — an open standard (like USB-C for AI tools). You build an MCP server that exposes functions.</text>
+  <text x="40" y="1530" font-size="10" fill="#8b949e">Any LLM that speaks MCP can discover and call those functions autonomously. Gemini connects to your server at http://localhost:8001/mcp</text>
+
+  <!-- MCP column headers -->
+  <text x="90"  y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">YOU</text>
+  <text x="240" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">FastAPI</text>
+  <text x="430" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="630" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#79c0ff">MCP Server :8001</text>
+  <text x="820" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">ChromaDB</text>
+  <line x1="20" y1="1566" x2="960" y2="1566" stroke="#30363d" stroke-width="1"/>
+
+  <!-- question in -->
+  <rect x="30"  y="1575" width="120" height="38" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="90"  y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /mcp-chat</text>
+  <text x="90"  y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">"your question"</text>
+  <line x1="150" y1="1594" x2="168" y2="1594" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="170" y="1575" width="120" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">mcp_chat.py</text>
+  <text x="230" y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">tools: search+mcp</text>
+  <line x1="290" y1="1594" x2="358" y2="1594" stroke="#d2a8ff" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1575" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="430" y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">2 tools available</text>
+
+  <!-- LLM thought -->
+  <line x1="430" y1="1613" x2="430" y2="1628" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1630" width="140" height="38" rx="7" fill="#161b22" stroke="#d2a8ff" stroke-dasharray="5,3" stroke-width="1.5"/>
+  <text x="430" y="1646" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">💭 Thinks...</text>
+  <text x="430" y="1660" text-anchor="middle" font-size="9"  fill="#8b949e">"use KB or Search?"</text>
+
+  <!-- LLM calls MCP -->
+  <line x1="430" y1="1668" x2="430" y2="1683" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Calls MCP Tool</text>
+  <text x="430" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">search_knowledge_base</text>
+  <line x1="500" y1="1704" x2="558" y2="1704" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#a-sdk)"/>
+
+  <!-- MCP server -->
+  <rect x="560" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="2"/>
+  <text x="630" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">MCP Server</text>
+  <text x="630" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">server.py :8001</text>
+  <line x1="700" y1="1704" x2="758" y2="1704" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+
+  <!-- ChromaDB -->
+  <rect x="760" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="820" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">ChromaDB</text>
+  <text x="820" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">similarity search</text>
+
+  <!-- results back -->
+  <line x1="760" y1="1730" x2="702" y2="1730" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <rect x="560" y="1740" width="140" height="38" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="630" y="1756" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">Sends Results</text>
+  <text x="630" y="1770" text-anchor="middle" font-size="9"  fill="#8b949e">via MCP protocol</text>
+  <line x1="560" y1="1759" x2="502" y2="1759" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+
+  <!-- step labels on right -->
+  <text x="910" y="1700" font-size="9" fill="#484f58">mcp_server</text>
+  <text x="910" y="1712" font-size="9" fill="#484f58">_tool_call</text>
+  <text x="910" y="1762" font-size="9" fill="#484f58">mcp_server</text>
+  <text x="910" y="1774" font-size="9" fill="#484f58">_tool_result</text>
+
+  <!-- LLM also calls Google Search -->
+  <line x1="430" y1="1759" x2="430" y2="1777" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1779" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1795" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Also calls</text>
+  <text x="430" y="1809" text-anchor="middle" font-size="9"  fill="#8b949e">Google Search tool</text>
+  <text x="910" y="1800" font-size="9" fill="#484f58">google_search</text>
+  <text x="910" y="1812" font-size="9" fill="#484f58">_call / _result</text>
+
+  <!-- final answer -->
+  <line x1="430" y1="1817" x2="430" y2="1832" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1834" width="140" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="430" y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">✅ Final Answer</text>
+  <text x="430" y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">both sources used</text>
+  <line x1="360" y1="1853" x2="292" y2="1853" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <rect x="170" y="1834" width="120" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">JSON Response</text>
+  <text x="230" y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">steps + answer</text>
+  <line x1="170" y1="1853" x2="152" y2="1853" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="30"  y="1834" width="120" height="38" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="90"  y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">You Get</text>
+  <text x="90"  y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">all steps visible</text>
+  <text x="910" y="1853" font-size="9" fill="#484f58">model_output</text>
+
+  <!-- MCP tools exposed box -->
+  <rect x="20" y="1885" width="940" height="58" rx="7" fill="#161b22" stroke="#79c0ff" stroke-width="1"/>
+  <text x="40" y="1903" font-size="11" font-weight="bold" fill="#79c0ff">Tools exposed by mcp_server/server.py  (LLM discovers these automatically):</text>
+  <text x="40" y="1920" font-size="10" fill="#8b949e">• search_knowledge_base(query, top_k)   — searches ChromaDB by semantic similarity, returns matching documents</text>
+  <text x="40" y="1934" font-size="10" fill="#8b949e">• add_document_to_kb(text, topic)        — embeds text and stores it in ChromaDB    • get_kb_stats()  — counts documents in the KB</text>
 
   <!-- ═══════════════════════════════════════ ARROW DEFS ══ -->
   <defs>
