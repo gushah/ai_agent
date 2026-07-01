@@ -4,7 +4,7 @@ A hands-on FastAPI app that makes **every internal step of an AI agent visible**
 Built for beginners who want to deeply understand how AI agents, LLMs, vector databases, RAG, MCP, and multi-agent systems actually work — not just use them as black boxes.
 
 > **Flowchart diagrams** are in [docs/how-it-works.md](docs/how-it-works.md) — GitHub renders them automatically.
-> For visual SVG diagrams of each flow individually, see [docs/diagrams/](docs/diagrams/) — or open `agent_flow_diagram.svg` for the complete all-in-one view.
+> Individual SVG diagrams for each flow are in [docs/diagrams/](docs/diagrams/).
 
 ---
 

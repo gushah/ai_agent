@@ -9,7 +9,6 @@ Detailed SVG diagrams (each section on its own):
 - [③④ Comparison + Code Structure](diagrams/03-comparison-code.svg)
 - [⑤ MCP Flow](diagrams/04-mcp-flow.svg)
 - [⑥ Multi-Agent Flow](diagrams/05-multi-agent.svg)
-- [All 6 sections combined](../agent_flow_diagram.svg)
 
 ---
 

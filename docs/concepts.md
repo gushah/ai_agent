@@ -127,7 +127,14 @@ ai_learning/
 │   ├── test_chat.py               ← /chat tests (mocked run_agent)
 │   └── test_multi_agent.py        ← /multi-agent-chat tests
 │
+├── docs/                          ← Documentation (split from README for readability)
+│   ├── concepts.md                ← Key concepts + project structure (this file)
+│   ├── setup.md                   ← Setup + running tests
+│   ├── walkthrough.md             ← Steps A–K + understanding responses
+│   ├── how-it-works.md            ← How the code flows (4 flows + Mermaid diagrams)
+│   ├── reference.md               ← Which flow to use + all endpoints
+│   └── diagrams/                  ← SVG diagrams, one per flow
+│
 ├── chroma_db/                     ← ChromaDB data (created automatically on first use)
-├── requirements.txt               ← Python dependencies
-└── agent_flow_diagram.svg         ← Visual diagram — open in browser
+└── requirements.txt               ← Python dependencies
 ```
