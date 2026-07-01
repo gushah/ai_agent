@@ -1,13 +1,13 @@
-# AI Agent + RAG + MCP — Learning Project
+# AI Agent + RAG + MCP + Multi-Agent — Learning Project
 
 A hands-on FastAPI app that makes **every internal step of an AI agent visible**.
-Built for beginners who want to deeply understand how AI agents, LLMs, vector databases, RAG, and MCP actually work — not just use them as black boxes.
+Built for beginners who want to deeply understand how AI agents, LLMs, vector databases, RAG, MCP, and multi-agent systems actually work — not just use them as black boxes.
 
-Open `agent_flow_diagram.svg` in your browser to see the full visual diagram.
+> **Flowchart diagrams** are embedded in the [How the Code Flows](#how-the-code-flows) section — GitHub renders them automatically in the browser, no viewer needed. For a detailed offline reference, open `agent_flow_diagram.svg`.
 
 ---
 
-## The Big Picture — All 3 Flows at a Glance
+## The Big Picture — All 4 Flows at a Glance
 
 This project shows you **3 different ways an AI can answer a question**. Each builds on the previous one.
 
@@ -187,7 +187,7 @@ export GEMINI_API_KEY="paste-your-key-here"
 
 ### Step 6 — Start the FastAPI server
 ```bash
-.venv/bin/uvicorn main:app --reload --port 8000
+.venv/bin/python -m uvicorn main:app --reload --port 8000
 ```
 
 You should see:
@@ -604,6 +604,17 @@ The `data` field of `mcp_server_tool_call` tells you:
 
 ### Flow 1 — Agent flow (POST /chat), step by step in plain English
 
+```mermaid
+flowchart LR
+    A([YOU]) -->|POST /chat| B[FastAPI\nchat.py]
+    B --> C[runner.py\nGemini SDK]
+    C --> D{Gemini LLM}
+    D -->|thinks: needs info| E[Google Search]
+    E -->|results| D
+    D -->|done: writes answer| F[JSON Response\nsteps + final_answer]
+    F --> A
+```
+
 ```
 Step 1  YOU send:  POST /chat  { "message": "What is the latest in AI?" }
 
@@ -641,6 +652,16 @@ chat.py → runner.py → [Gemini + Google] → parser.py → ChatResponse JSON
 ---
 
 ### Flow 2 — RAG flow (POST /documents/rag-chat), step by step in plain English
+
+```mermaid
+flowchart LR
+    A([YOU]) -->|POST /rag-chat| B[FastAPI\nrag.py]
+    B --> C[Embed question\ntext-embedding-004]
+    C --> D[(ChromaDB\nsimilarity search)]
+    D --> E[Top K docs\nwith similarity scores]
+    E --> F{Gemini LLM\nAnswer from docs ONLY}
+    F -->|JSON: docs used + answer| A
+```
 
 ```
 Step 1  YOU send:  POST /documents/rag-chat  { "question": "What is RAG?", "top_k": 3 }
@@ -708,6 +729,18 @@ rag.py → retriever.add_document() → store.GeminiEmbeddingFunction → Chroma
 
 ### Flow 3 — MCP flow (POST /mcp-chat), step by step in plain English
 
+```mermaid
+flowchart LR
+    A([YOU]) -->|POST /mcp-chat| B[FastAPI]
+    B --> C{Gemini LLM\n2 tools available}
+    C -->|LLM calls KB tool| D[MCP Server :8001\nsearch_knowledge_base]
+    D --> E[(ChromaDB)]
+    E -->|docs found| C
+    C -->|LLM calls search| F[Google Search]
+    F -->|web results| C
+    C -->|JSON all steps| A
+```
+
 ```
 Step 1  YOU send:  POST /mcp-chat  { "message": "What is RAG? Also any AI news today?" }
         Two terminals must be running: FastAPI on :8000 AND MCP server on :8001.
@@ -766,6 +799,16 @@ Gemini connects to http://localhost:8001/mcp
 ```
 
 ### Flow 4 — Multi-Agent flow (POST /multi-agent-chat), step by step in plain English
+
+```mermaid
+flowchart TD
+    A([YOU\nPOST /multi-agent-chat]) --> O[Orchestrator\nmulti_runner.py]
+    O -->|Step 1| R[Agent 1: Research\nGoogle Search]
+    O -->|Step 2| K[Agent 2: Knowledge\nChromaDB]
+    R --> S[Agent 3: Synthesizer\nCombines both]
+    K --> S
+    S -->|Internet + KB labelled| A
+```
 
 ```
 Step 1  YOU send:  POST /multi-agent-chat  { "message": "What is RAG?" }

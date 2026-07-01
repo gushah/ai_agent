@@ -15,12 +15,31 @@ router = APIRouter()
 def root():
     return {
         "status": "ok",
-        "message": "AI Agent Flow API is running.",
+        "message": "AI Agent Flow API — 4 flows, 12 endpoints. Open /docs for interactive UI.",
+        "quick_start": "Step 1: POST /documents/seed  →  Step 2: POST /documents/rag-chat",
         "endpoints": {
-            "POST /chat": "Ask the AI agent — see every internal step",
-            "GET  /flow-explained": "Learn what each step type means",
-            "GET  /models": "List supported models",
-            "GET  /docs": "Interactive Swagger UI",
+            "Info": {
+                "GET  /": "This health check",
+                "GET  /docs": "Interactive Swagger UI — test all endpoints here",
+                "GET  /models": "List supported Gemini model IDs",
+                "GET  /flow-explained": "Plain-English guide to agent architecture",
+            },
+            "Flow 1 — Agent (LLM + Google Search)": {
+                "POST /chat": "AI agent with Google Search — see every internal step",
+            },
+            "Flow 2 — RAG (Your Knowledge Base)": {
+                "POST /documents/seed": "Load 7 sample documents into ChromaDB",
+                "POST /documents": "Add your own document (text → embedding → ChromaDB)",
+                "GET  /documents": "List all stored documents",
+                "DELETE /documents/{id}": "Remove a document from ChromaDB",
+                "POST /documents/rag-chat": "Ask a question using your knowledge base",
+            },
+            "Flow 3 — MCP (LLM picks tools autonomously)": {
+                "POST /mcp-chat": "LLM chooses Google Search and/or ChromaDB via MCP protocol",
+            },
+            "Flow 4 — Multi-Agent (Orchestrator pattern)": {
+                "POST /multi-agent-chat": "3 agents: research_agent + knowledge_agent + synthesizer",
+            },
         },
     }
 
