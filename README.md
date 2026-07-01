@@ -7,9 +7,40 @@ Built for beginners who want to deeply understand how AI agents, LLMs, vector da
 
 ---
 
+## What Problem Does This Solve? (Real-World Value)
+
+**The core problem:** An LLM like Gemini knows everything up to its training date, but knows *nothing* about your business — your products, internal policies, customer data, or private documents.
+
+This app demonstrates the 4 patterns companies use to solve that:
+
+| Pattern | Business problem solved | Real product using it |
+|---|---|---|
+| **Agent** `/chat` | Questions needing live internet data | Perplexity AI, Google AI Overview |
+| **RAG** `/rag-chat` | Questions answered from YOUR private documents | Notion AI, Confluence AI, SharePoint Copilot |
+| **MCP** `/mcp-chat` | Questions needing both internet AND your private data | GitHub Copilot (code + docs), Intercom Fin |
+| **Multi-Agent** `/multi-agent-chat` | Complex research combining multiple specialist sources | Enterprise research tools, financial analysis bots |
+
+**Concrete examples of what you could build by swapping the sample data:**
+
+| Replace sample docs with... | You get... |
+|---|---|
+| Your company FAQ + product manuals | Customer support bot that answers from YOUR docs, not the internet |
+| Employee handbook + HR policies | Internal HR assistant — "What is our parental leave policy?" |
+| Legal contracts + compliance docs | Contract Q&A tool — grounded in your exact wording |
+| Medical protocols + drug information | Clinical knowledge assistant — answers stay within approved guidelines |
+| Code documentation + API specs | Developer assistant scoped to YOUR codebase |
+
+**The single change needed:** Run `POST /documents` (or update `POST /documents/seed`) with your real documents instead of the sample AI glossary docs. The architecture, code, and endpoints stay exactly the same.
+
+> **Key insight:** The sample documents in this app are about AI concepts (RAG, embeddings, etc.) purely so you can *learn* the concepts while testing the system. In production, you replace those with whatever your business actually needs.
+
+
+
+---
+
 ## The Big Picture — All 4 Flows at a Glance
 
-This project shows you **3 different ways an AI can answer a question**. Each builds on the previous one.
+This project shows you **4 different patterns for building AI into products**. Each builds on the previous one.
 
 ```
 YOUR QUESTION
@@ -39,13 +70,15 @@ YOUR QUESTION
 
 ## Table of Contents
 
-1. [Key Concepts — Read First](#key-concepts--read-first)
-2. [Project Structure](#project-structure)
-3. [Setup](#setup)
-4. [Testing All APIs — Step by Step](#testing-all-apis--step-by-step)
-5. [Understanding the Responses](#understanding-the-responses)
-6. [How the Code Flows](#how-the-code-flows)
-7. [All Endpoints at a Glance](#all-endpoints-at-a-glance)
+1. [What Problem Does This Solve?](#what-problem-does-this-solve-real-world-value)
+2. [Key Concepts — Read First](#key-concepts--read-first)
+3. [Project Structure](#project-structure)
+4. [Setup](#setup)
+5. [Testing All APIs — Step by Step](#testing-all-apis--step-by-step)
+6. [Understanding the Responses](#understanding-the-responses)
+7. [How the Code Flows](#how-the-code-flows)
+8. [Which Flow Should I Use?](#which-flow-should-i-use)
+9. [All Endpoints at a Glance](#all-endpoints-at-a-glance)
 
 ---
 
