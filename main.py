@@ -10,9 +10,26 @@
 # Docs: http://127.0.0.1:8000/docs
 # ─────────────────────────────────────────────────────────────────────────────
 
+import logging
+
 from fastapi import FastAPI
 
 from app.routes import chat, info, rag, mcp_chat, multi_agent
+
+# ── Logging setup ─────────────────────────────────────────────────────────────
+# Uvicorn only configures its own "uvicorn.*" loggers.  It leaves the root
+# logger at WARNING, so our app.* loggers would be silenced.
+# Fix: attach a StreamHandler directly to the "app" logger so it writes
+# regardless of what uvicorn does to the root logger.
+_app_log = logging.getLogger("app")
+if not _app_log.handlers:                       # guard against double-add on reload
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(
+        logging.Formatter("%(levelname)-8s [%(module)s] %(message)s")
+    )
+    _app_log.setLevel(logging.INFO)
+    _app_log.addHandler(_handler)
+    _app_log.propagate = False                  # don't let it bubble to root
 
 app = FastAPI(
     title="AI Agent Flow Demo",
