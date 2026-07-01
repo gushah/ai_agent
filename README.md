@@ -281,6 +281,35 @@ Every endpoint is listed there. You can run them directly from the browser — n
 
 ---
 
+## Running the Test Suite
+
+Tests verify all 4 flows **without** a Gemini API key and **without** writing to disk.
+They use in-memory ChromaDB and mocked LLM calls, so they run in ~1 second.
+
+```bash
+# From the ai_agent/ folder with the venv active:
+.venv/bin/python -m pytest tests/ -v
+```
+
+To also see test coverage:
+```bash
+.venv/bin/python -m pytest tests/ -v --cov=app --cov-report=term-missing
+```
+
+### What the tests cover
+
+| File | What it tests | Mocking strategy |
+|---|---|---|
+| `tests/test_info.py` | `GET /`, `/models`, `/flow-explained` | None needed — static data |
+| `tests/test_schemas.py` | Pydantic validation (accepts / rejects data) | None — pure Python |
+| `tests/test_rag.py` | All RAG endpoints (add, list, delete, rag-chat) | ChromaDB → in-memory; LLM → `MagicMock` |
+| `tests/test_chat.py` | `POST /chat` request/response shape | `run_agent()` → fake `ChatResponse` |
+| `tests/test_multi_agent.py` | `POST /multi-agent-chat` structure | `run_multi_agent()` → fake `MultiAgentResponse` |
+
+> **Key technique:** `conftest.py` defines a `FakeEmbeddingFn` that returns deterministic vectors without calling Gemini. Every test gets a fresh isolated ChromaDB collection — no test ever touches the real `chroma_db/` folder.
+
+---
+
 ## Testing All APIs — Step by Step
 
 Work through these in order. Each step builds on the last.

@@ -34,7 +34,7 @@ def add_document(text: str, metadata: dict | None = None, doc_id: str | None = N
     doc_id = doc_id or str(uuid.uuid4())
     collection.add(
         documents=[text],
-        metadatas=[metadata or {}],
+        metadatas=[metadata] if metadata else None,
         ids=[doc_id],
     )
     return doc_id
@@ -46,13 +46,16 @@ def add_documents(items: list[dict[str, Any]]) -> list[str]:
     Each item should have: {"text": str, "metadata": dict, "doc_id": str (optional)}
     """
     collection = get_collection()
-    texts, metadatas, ids = [], [], []
+    texts, raw_metas, ids = [], [], []
     for item in items:
         texts.append(item["text"])
-        metadatas.append(item.get("metadata", {}))
+        raw_metas.append(item.get("metadata") or None)
         ids.append(item.get("doc_id") or str(uuid.uuid4()))
 
-    collection.add(documents=texts, metadatas=metadatas, ids=ids)
+    # Only pass metadatas when at least one document has metadata.
+    # ChromaDB 1.5.9 rejects empty dicts and mixed-None lists.
+    effective_metas = raw_metas if any(raw_metas) else None
+    collection.add(documents=texts, metadatas=effective_metas, ids=ids)
     return ids
 
 
@@ -88,7 +91,7 @@ def search(question: str, top_k: int = 3) -> list[dict[str, Any]]:
         docs.append({
             "doc_id": doc_id,
             "text": results["documents"][0][i],
-            "metadata": results["metadatas"][0][i],
+            "metadata": results["metadatas"][0][i] or {},
             "similarity_score": similarity,
         })
 
