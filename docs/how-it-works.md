@@ -3,6 +3,14 @@
 Plain-English walkthroughs of all 4 flows with Mermaid diagrams.
 GitHub renders these diagrams automatically in the browser.
 
+Detailed SVG diagrams (each section on its own):
+- [① Agent Flow](diagrams/01-agent-flow.svg)
+- [② RAG Flow](diagrams/02-rag-flow.svg)
+- [③④ Comparison + Code Structure](diagrams/03-comparison-code.svg)
+- [⑤ MCP Flow](diagrams/04-mcp-flow.svg)
+- [⑥ Multi-Agent Flow](diagrams/05-multi-agent.svg)
+- [All 6 sections combined](../agent_flow_diagram.svg)
+
 ---
 
 ## Flow 1 — Agent flow (POST /chat)

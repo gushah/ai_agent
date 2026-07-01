@@ -1,0 +1,454 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1955 980 530" width="980" height="530" font-family="Segoe UI, Arial, sans-serif">
+  <!-- Multi-Agent Flow — POST /multi-agent-chat -->
+  <defs>
+    <marker id="a-blue"   markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#58a6ff"/></marker>
+    <marker id="a-green"  markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#3fb950"/></marker>
+    <marker id="a-purple" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#d2a8ff"/></marker>
+    <marker id="a-orange" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#ffa657"/></marker>
+    <marker id="a-sdk"    markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#79c0ff"/></marker>
+  </defs>
+  <rect x="0" y="1955" width="980" height="530" fill="#0f1117"/>
+  <rect width="980" height="1560" fill="#0f1117" rx="16"/>
+
+  <!-- ═══════════════════════════════════════ TITLE ══ -->
+  <text x="490" y="44" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">AI Agent + RAG — Complete Flow Diagram</text>
+  <text x="490" y="66" text-anchor="middle" font-size="12" fill="#8b949e">How the LLM, Tools, Vector Database, and FastAPI all connect</text>
+
+  <!-- ═══════════════════════════════════════ SECTION 1 ══ -->
+  <rect x="20" y="82" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="#58a6ff">① AGENT FLOW — POST /chat   (LLM + Google Search Tool)</text>
+
+  <!-- Column headers -->
+  <text x="90"  y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">YOU</text>
+  <text x="230" y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">FastAPI</text>
+  <text x="420" y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="620" y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">Google Search</text>
+  <text x="820" y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#79c0ff">genai SDK</text>
+  <line x1="20" y1="134" x2="960" y2="134" stroke="#30363d" stroke-width="1"/>
+
+  <!-- step 0: user sends question -->
+  <rect x="30"  y="145" width="120" height="40" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="90"  y="162" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /chat</text>
+  <text x="90"  y="176" text-anchor="middle" font-size="9"  fill="#8b949e">"your question"</text>
+  <line x1="150" y1="165" x2="168" y2="165" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="170" y="145" width="120" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="162" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">Validate</text>
+  <text x="230" y="176" text-anchor="middle" font-size="9"  fill="#8b949e">routes/chat.py</text>
+  <line x1="290" y1="165" x2="758" y2="165" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a-green)"/>
+  <text x="524" y="158" text-anchor="middle" font-size="9" fill="#3fb950">interactions.create()</text>
+  <rect x="760" y="145" width="120" height="40" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="820" y="162" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">Gemini API</text>
+  <text x="820" y="176" text-anchor="middle" font-size="9"  fill="#8b949e">runner.py</text>
+  <text x="965" y="168" font-size="9" fill="#484f58">user_input</text>
+
+  <!-- step 1: thought -->
+  <rect x="360" y="205" width="120" height="40" rx="7" fill="#161b22" stroke="#d2a8ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="420" y="222" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">💭 Thinking</text>
+  <text x="420" y="236" text-anchor="middle" font-size="9"  fill="#8b949e">chain-of-thought</text>
+  <line x1="820" y1="185" x2="820" y2="198" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="820" y1="198" x2="482" y2="198" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="482" y1="198" x2="482" y2="203" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#a-sdk)"/>
+  <text x="965" y="221" font-size="9" fill="#484f58">thought</text>
+  <text x="965" y="233" font-size="9" fill="#484f58">(hidden)</text>
+
+  <!-- step 2: google_search_call -->
+  <line x1="420" y1="245" x2="420" y2="263" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="265" width="120" height="40" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="420" y="282" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Calls Tool</text>
+  <text x="420" y="296" text-anchor="middle" font-size="9"  fill="#8b949e">google_search</text>
+  <line x1="480" y1="285" x2="558" y2="285" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <rect x="560" y="265" width="120" height="40" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="620" y="282" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">Search Web</text>
+  <text x="620" y="296" text-anchor="middle" font-size="9"  fill="#8b949e">queries sent</text>
+  <text x="965" y="285" font-size="9" fill="#484f58">search_call</text>
+
+  <!-- step 3: search result -->
+  <line x1="620" y1="305" x2="620" y2="323" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <rect x="560" y="325" width="120" height="40" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="620" y="342" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">Results Back</text>
+  <text x="620" y="356" text-anchor="middle" font-size="9"  fill="#8b949e">title, url, snippet</text>
+  <line x1="560" y1="345" x2="482" y2="345" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="325" width="120" height="40" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="420" y="342" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Reads Results</text>
+  <text x="420" y="356" text-anchor="middle" font-size="9"  fill="#8b949e">parser.py</text>
+  <text x="965" y="348" font-size="9" fill="#484f58">search_result</text>
+
+  <!-- step 4: thought again -->
+  <line x1="420" y1="365" x2="420" y2="383" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="385" width="120" height="40" rx="7" fill="#161b22" stroke="#d2a8ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="420" y="402" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">💭 Thinking</text>
+  <text x="420" y="416" text-anchor="middle" font-size="9"  fill="#8b949e">"ready to answer"</text>
+  <text x="965" y="405" font-size="9" fill="#484f58">thought</text>
+  <text x="965" y="417" font-size="9" fill="#484f58">(hidden)</text>
+
+  <!-- step 5: model_output -->
+  <line x1="420" y1="425" x2="420" y2="443" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="445" width="120" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="420" y="462" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">✅ Final Answer</text>
+  <text x="420" y="476" text-anchor="middle" font-size="9"  fill="#8b949e">model_output</text>
+  <line x1="360" y1="465" x2="292" y2="465" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <rect x="170" y="445" width="120" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="462" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">Build JSON</text>
+  <text x="230" y="476" text-anchor="middle" font-size="9"  fill="#8b949e">all steps + answer</text>
+  <line x1="170" y1="465" x2="152" y2="465" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="30"  y="445" width="120" height="40" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="90"  y="462" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">You Get</text>
+  <text x="90"  y="476" text-anchor="middle" font-size="9"  fill="#8b949e">steps + answer</text>
+  <text x="965" y="468" font-size="9" fill="#484f58">model_output</text>
+
+  <!-- ═══════════════════════════════════════ STEP TYPE KEY ══ -->
+  <rect x="20" y="500" width="940" height="72" rx="8" fill="#161b22"/>
+  <text x="40" y="520" font-size="11" font-weight="bold" fill="#8b949e">Step types you see in /chat response:</text>
+  <rect x="40"  y="530" width="10" height="10" rx="2" fill="#58a6ff"/>  <text x="56"  y="540" font-size="10" fill="#e6edf3">user_input</text>    <text x="56"  y="553" font-size="9" fill="#8b949e">your question</text>
+  <rect x="160" y="530" width="10" height="10" rx="2" fill="#d2a8ff" opacity="0.4"/> <text x="176" y="540" font-size="10" fill="#e6edf3">thought</text>       <text x="176" y="553" font-size="9" fill="#8b949e">LLM reasoning (hidden)</text>
+  <rect x="320" y="530" width="10" height="10" rx="2" fill="#d2a8ff"/> <text x="336" y="540" font-size="10" fill="#e6edf3">google_search_call</text> <text x="336" y="553" font-size="9" fill="#8b949e">LLM calls Google</text>
+  <rect x="520" y="530" width="10" height="10" rx="2" fill="#ffa657"/> <text x="536" y="540" font-size="10" fill="#e6edf3">google_search_result</text> <text x="536" y="553" font-size="9" fill="#8b949e">results returned</text>
+  <rect x="730" y="530" width="10" height="10" rx="2" fill="#3fb950"/> <text x="746" y="540" font-size="10" fill="#e6edf3">model_output</text>   <text x="746" y="553" font-size="9" fill="#8b949e">final answer</text>
+
+  <!-- ═══════════════════════════════════════ SECTION 2 ══ -->
+  <rect x="20" y="585" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="604" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffa657">② RAG FLOW — POST /documents/rag-chat   (Your Knowledge Base)</text>
+
+  <!-- RAG column headers -->
+  <text x="90"  y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">YOU</text>
+  <text x="240" y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">FastAPI</text>
+  <text x="430" y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">ChromaDB</text>
+  <text x="630" y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="820" y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#79c0ff">Embedding Model</text>
+  <line x1="20" y1="636" x2="960" y2="636" stroke="#30363d" stroke-width="1"/>
+
+  <!-- RAG step 1: question comes in -->
+  <rect x="30"  y="648" width="120" height="40" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="90"  y="665" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /rag-chat</text>
+  <text x="90"  y="679" text-anchor="middle" font-size="9"  fill="#8b949e">"your question"</text>
+  <line x1="150" y1="668" x2="168" y2="668" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="170" y="648" width="120" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="665" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">Validate</text>
+  <text x="230" y="679" text-anchor="middle" font-size="9"  fill="#8b949e">routes/rag.py</text>
+  <text x="965" y="671" font-size="9" fill="#484f58">Step 1</text>
+
+  <!-- RAG step 2: embed question -->
+  <line x1="290" y1="668" x2="758" y2="668" stroke="#79c0ff" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a-sdk)"/>
+  <text x="524" y="661" text-anchor="middle" font-size="9" fill="#79c0ff">embed question text</text>
+  <rect x="760" y="648" width="120" height="40" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="820" y="665" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">text-embedding-004</text>
+  <text x="820" y="679" text-anchor="middle" font-size="9"  fill="#8b949e">text → 768 numbers</text>
+  <text x="965" y="671" font-size="9" fill="#484f58">Embed</text>
+
+  <!-- embedding vector visual -->
+  <rect x="170" y="702" width="700" height="30" rx="6" fill="#161b22" stroke="#79c0ff" stroke-width="1"/>
+  <text x="230" y="721" font-size="10" font-weight="bold" fill="#79c0ff">Question Vector: </text>
+  <text x="350" y="721" font-size="10" fill="#8b949e">[ 0.142,  −0.381,  0.029,  0.754,  −0.103,  0.612, ... ] ← 768 numbers representing meaning</text>
+  <line x1="820" y1="688" x2="820" y2="700" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="820" y1="700" x2="872" y2="700" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="872" y1="700" x2="872" y2="716" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="872" y1="716" x2="872" y2="716" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#a-sdk)"/>
+  <line x1="230" y1="700" x2="176" y2="700" stroke="#79c0ff" stroke-width="1.5"/>
+  <line x1="176" y1="700" x2="176" y2="716" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#a-sdk)"/>
+
+  <!-- RAG step 3: search ChromaDB -->
+  <line x1="290" y1="717" x2="358" y2="717" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <text x="324" y="710" text-anchor="middle" font-size="9" fill="#ffa657">search</text>
+  <rect x="360" y="702" width="140" height="40" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="2"/>
+  <text x="430" y="719" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">🗄 ChromaDB</text>
+  <text x="430" y="733" text-anchor="middle" font-size="9"  fill="#8b949e">cosine similarity search</text>
+  <text x="965" y="724" font-size="9" fill="#484f58">Step 2</text>
+  <text x="965" y="736" font-size="9" fill="#484f58">Search DB</text>
+
+  <!-- cosine similarity explanation box -->
+  <rect x="170" y="756" width="700" height="52" rx="6" fill="#161b22" stroke="#ffa657" stroke-width="1"/>
+  <text x="190" y="773" font-size="10" font-weight="bold" fill="#ffa657">How similarity search works inside ChromaDB:</text>
+  <text x="190" y="789" font-size="9" fill="#8b949e">Your question vector is compared to every stored document vector using cosine similarity (angle between vectors).</text>
+  <text x="190" y="802" font-size="9" fill="#8b949e">Score 1.0 = identical meaning   |   Score 0.8+ = very related   |   Score 0.5 = somewhat related   |   Score 0.0 = unrelated</text>
+  <line x1="430" y1="742" x2="430" y2="754" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+
+  <!-- RAG step 4: top docs returned -->
+  <line x1="430" y1="808" x2="430" y2="820" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <rect x="360" y="822" width="140" height="52" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="430" y="839" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">Top 3 Docs</text>
+  <text x="430" y="853" text-anchor="middle" font-size="9"  fill="#8b949e">doc + similarity score</text>
+  <text x="430" y="866" text-anchor="middle" font-size="9"  fill="#8b949e">e.g. 0.94, 0.81, 0.76</text>
+  <text x="965" y="850" font-size="9" fill="#484f58">Step 3</text>
+  <text x="965" y="862" font-size="9" fill="#484f58">Retrieve</text>
+
+  <!-- RAG step 5: build context -->
+  <line x1="290" y1="848" x2="358" y2="848" stroke="#3fb950" stroke-width="1.5"/>
+  <line x1="290" y1="848" x2="290" y2="870" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <rect x="170" y="872" width="180" height="52" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="260" y="889" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">Build Context</text>
+  <text x="260" y="903" text-anchor="middle" font-size="9"  fill="#8b949e">format docs as</text>
+  <text x="260" y="916" text-anchor="middle" font-size="9"  fill="#8b949e">text block</text>
+  <text x="965" y="896" font-size="9" fill="#484f58">Step 4</text>
+
+  <!-- context prompt box -->
+  <rect x="170" y="938" width="700" height="60" rx="6" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+  <text x="190" y="955" font-size="9" font-weight="bold" fill="#3fb950">Prompt sent to LLM:</text>
+  <text x="190" y="970" font-size="9" fill="#8b949e">"Answer using ONLY this context: [Document 1 | similarity: 0.94] RAG stands for Retrieval...</text>
+  <text x="190" y="984" font-size="9" fill="#8b949e"> [Document 2 | similarity: 0.81] A vector database stores...    QUESTION: What is RAG?"</text>
+  <line x1="260" y1="924" x2="260" y2="936" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+
+  <!-- RAG step 6: LLM answers -->
+  <line x1="500" y1="968" x2="558" y2="968" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <text x="529" y="961" text-anchor="middle" font-size="9" fill="#d2a8ff">prompt</text>
+  <rect x="560" y="948" width="140" height="40" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="2"/>
+  <text x="630" y="965" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="630" y="979" text-anchor="middle" font-size="9"  fill="#8b949e">reads context only</text>
+  <text x="965" y="970" font-size="9" fill="#484f58">Step 5</text>
+  <text x="965" y="982" font-size="9" fill="#484f58">LLM answers</text>
+
+  <!-- RAG step 7: answer back -->
+  <line x1="630" y1="988" x2="630" y2="1006" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="560" y="1008" width="140" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="630" y="1025" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">✅ Grounded Answer</text>
+  <text x="630" y="1039" text-anchor="middle" font-size="9"  fill="#8b949e">from YOUR docs only</text>
+  <line x1="560" y1="1028" x2="292" y2="1028" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <rect x="170" y="1008" width="120" height="40" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="1025" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">JSON Response</text>
+  <text x="230" y="1039" text-anchor="middle" font-size="9"  fill="#8b949e">docs + scores + answer</text>
+  <line x1="170" y1="1028" x2="152" y2="1028" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="30"  y="1008" width="120" height="40" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="90"  y="1025" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">You Get</text>
+  <text x="90"  y="1039" text-anchor="middle" font-size="9"  fill="#8b949e">answer + which docs</text>
+  <text x="965" y="1028" font-size="9" fill="#484f58">Return</text>
+
+  <!-- ═══════════════════════════════════════ COMPARISON ══ -->
+  <rect x="20" y="1063" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1082" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">③ Agent vs RAG — What's the difference?</text>
+
+  <rect x="20"  y="1102" width="455" height="130" rx="8" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="247" y="1124" text-anchor="middle" font-size="12" font-weight="bold" fill="#58a6ff">POST /chat  (AI Agent)</text>
+  <text x="40"  y="1145" font-size="10" fill="#8b949e">• LLM uses Google Search (live internet)</text>
+  <text x="40"  y="1161" font-size="10" fill="#8b949e">• Agent decides WHEN to search</text>
+  <text x="40"  y="1177" font-size="10" fill="#8b949e">• Good for: current events, general knowledge</text>
+  <text x="40"  y="1193" font-size="10" fill="#8b949e">• Answer can include anything from the web</text>
+  <text x="40"  y="1209" font-size="10" fill="#ffa657">• You do NOT control the source of truth</text>
+
+  <rect x="505" y="1102" width="455" height="130" rx="8" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="732" y="1124" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffa657">POST /documents/rag-chat  (RAG)</text>
+  <text x="525" y="1145" font-size="10" fill="#8b949e">• LLM uses YOUR documents (ChromaDB)</text>
+  <text x="525" y="1161" font-size="10" fill="#8b949e">• You control exactly what knowledge exists</text>
+  <text x="525" y="1177" font-size="10" fill="#8b949e">• Good for: private data, internal docs, FAQs</text>
+  <text x="525" y="1193" font-size="10" fill="#8b949e">• LLM cannot make up info beyond the context</text>
+  <text x="525" y="1209" font-size="10" fill="#3fb950">• YOU control the source of truth</text>
+
+  <!-- ═══════════════════════════════════════ CODE STRUCTURE ══ -->
+  <rect x="20" y="1248" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1267" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">④ Code Structure — which file does what</text>
+
+  <!-- Row 1 -->
+  <rect x="20"  y="1288" width="920" height="36" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <text x="40"  y="1308" font-size="11" font-weight="bold" fill="#58a6ff">main.py</text>
+  <text x="130" y="1308" font-size="10" fill="#8b949e">Entry point. Creates FastAPI app, registers all routers. Nothing else.</text>
+
+  <!-- Row 2 -->
+  <rect x="20"  y="1330" width="440" height="36" rx="6" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+  <text x="40"  y="1350" font-size="11" font-weight="bold" fill="#3fb950">app/routes/chat.py</text>
+  <text x="200" y="1350" font-size="10" fill="#8b949e">POST /chat → calls runner.py</text>
+  <rect x="470" y="1330" width="470" height="36" rx="6" fill="#0d1117" stroke="#ffa657" stroke-width="1"/>
+  <text x="490" y="1350" font-size="11" font-weight="bold" fill="#ffa657">app/routes/rag.py</text>
+  <text x="640" y="1350" font-size="10" fill="#8b949e">POST /documents/rag-chat → retriever + LLM</text>
+
+  <!-- Row 3 -->
+  <rect x="20"  y="1372" width="440" height="36" rx="6" fill="#0d1117" stroke="#d2a8ff" stroke-width="1"/>
+  <text x="40"  y="1392" font-size="11" font-weight="bold" fill="#d2a8ff">app/agent/runner.py</text>
+  <text x="210" y="1392" font-size="10" fill="#8b949e">Calls Gemini interactions API, gets steps</text>
+  <rect x="470" y="1372" width="230" height="36" rx="6" fill="#0d1117" stroke="#ffa657" stroke-width="1"/>
+  <text x="490" y="1392" font-size="11" font-weight="bold" fill="#ffa657">app/vectordb/store.py</text>
+  <text x="490" y="1406" font-size="10" fill="#8b949e">ChromaDB + Gemini embeddings</text>
+  <rect x="710" y="1372" width="230" height="36" rx="6" fill="#0d1117" stroke="#ffa657" stroke-width="1"/>
+  <text x="730" y="1392" font-size="11" font-weight="bold" fill="#ffa657">app/vectordb/retriever.py</text>
+  <text x="730" y="1406" font-size="10" fill="#8b949e">add_document, search</text>
+
+  <!-- Row 4 -->
+  <rect x="20"  y="1414" width="440" height="36" rx="6" fill="#0d1117" stroke="#d2a8ff" stroke-width="1"/>
+  <text x="40"  y="1434" font-size="11" font-weight="bold" fill="#d2a8ff">app/agent/parser.py</text>
+  <text x="210" y="1434" font-size="10" fill="#8b949e">Converts raw SDK steps → AgentStep</text>
+  <rect x="470" y="1414" width="470" height="36" rx="6" fill="#0d1117" stroke="#79c0ff" stroke-width="1"/>
+  <text x="490" y="1434" font-size="11" font-weight="bold" fill="#79c0ff">app/config.py</text>
+  <text x="610" y="1434" font-size="10" fill="#8b949e">  |  </text>
+  <text x="625" y="1434" font-size="11" font-weight="bold" fill="#79c0ff">app/client.py</text>
+  <text x="745" y="1434" font-size="10" fill="#8b949e">  |  </text>
+  <text x="760" y="1434" font-size="11" font-weight="bold" fill="#79c0ff">app/models/schemas.py</text>
+
+  <!-- ═══════════════════════════════════════ LEGEND ══ -->
+  <rect x="20" y="1464" width="940" height="80" rx="8" fill="#161b22"/>
+  <text x="40" y="1484" font-size="11" font-weight="bold" fill="#8b949e">Legend</text>
+  <line x1="40"  y1="1504" x2="80"  y2="1504" stroke="#58a6ff" stroke-width="2"/><text x="90"  y="1508" font-size="10" fill="#8b949e">You ↔ FastAPI (HTTP)</text>
+  <line x1="220" y1="1504" x2="260" y2="1504" stroke="#d2a8ff" stroke-width="2"/><text x="270" y="1508" font-size="10" fill="#8b949e">LLM internal / reasoning</text>
+  <line x1="420" y1="1504" x2="460" y2="1504" stroke="#ffa657" stroke-width="2"/><text x="470" y="1508" font-size="10" fill="#8b949e">Tool / ChromaDB</text>
+  <line x1="600" y1="1504" x2="640" y2="1504" stroke="#79c0ff" stroke-width="2" stroke-dasharray="4,3"/><text x="650" y="1508" font-size="10" fill="#8b949e">SDK / embedding calls</text>
+  <line x1="800" y1="1504" x2="840" y2="1504" stroke="#3fb950" stroke-width="2"/><text x="850" y="1508" font-size="10" fill="#8b949e">Final answers</text>
+  <rect x="40" y="1520" width="12" height="12" rx="2" fill="none" stroke="#d2a8ff" stroke-dasharray="4,2" stroke-width="1.5"/>
+  <text x="60" y="1531" font-size="10" fill="#8b949e">Dashed border = hidden from end-users (thought steps inside the LLM)</text>
+
+  <!-- ═══════════════════════════════════════ SECTION 5: MCP ══ -->
+  <rect x="20" y="1456" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1475" text-anchor="middle" font-size="13" font-weight="bold" fill="#79c0ff">⑤ MCP FLOW — POST /mcp-chat   (LLM picks its own tools: Google Search OR ChromaDB)</text>
+
+  <!-- what is MCP box -->
+  <rect x="20" y="1495" width="940" height="44" rx="7" fill="#161b22" stroke="#79c0ff" stroke-width="1"/>
+  <text x="40" y="1514" font-size="11" font-weight="bold" fill="#79c0ff">What is MCP?</text>
+  <text x="150" y="1514" font-size="10" fill="#8b949e">Model Context Protocol — an open standard (like USB-C for AI tools). You build an MCP server that exposes functions.</text>
+  <text x="40" y="1530" font-size="10" fill="#8b949e">Any LLM that speaks MCP can discover and call those functions autonomously. Gemini connects to your server at http://localhost:8001/mcp</text>
+
+  <!-- MCP column headers -->
+  <text x="90"  y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">YOU</text>
+  <text x="240" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">FastAPI</text>
+  <text x="430" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="630" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#79c0ff">MCP Server :8001</text>
+  <text x="820" y="1560" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">ChromaDB</text>
+  <line x1="20" y1="1566" x2="960" y2="1566" stroke="#30363d" stroke-width="1"/>
+
+  <!-- question in -->
+  <rect x="30"  y="1575" width="120" height="38" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="90"  y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /mcp-chat</text>
+  <text x="90"  y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">"your question"</text>
+  <line x1="150" y1="1594" x2="168" y2="1594" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="170" y="1575" width="120" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">mcp_chat.py</text>
+  <text x="230" y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">tools: search+mcp</text>
+  <line x1="290" y1="1594" x2="358" y2="1594" stroke="#d2a8ff" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1575" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1591" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Gemini LLM</text>
+  <text x="430" y="1605" text-anchor="middle" font-size="9"  fill="#8b949e">2 tools available</text>
+
+  <!-- LLM thought -->
+  <line x1="430" y1="1613" x2="430" y2="1628" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1630" width="140" height="38" rx="7" fill="#161b22" stroke="#d2a8ff" stroke-dasharray="5,3" stroke-width="1.5"/>
+  <text x="430" y="1646" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">💭 Thinks...</text>
+  <text x="430" y="1660" text-anchor="middle" font-size="9"  fill="#8b949e">"use KB or Search?"</text>
+
+  <!-- LLM calls MCP -->
+  <line x1="430" y1="1668" x2="430" y2="1683" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Calls MCP Tool</text>
+  <text x="430" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">search_knowledge_base</text>
+  <line x1="500" y1="1704" x2="558" y2="1704" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#a-sdk)"/>
+
+  <!-- MCP server -->
+  <rect x="560" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="2"/>
+  <text x="630" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">MCP Server</text>
+  <text x="630" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">server.py :8001</text>
+  <line x1="700" y1="1704" x2="758" y2="1704" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+
+  <!-- ChromaDB -->
+  <rect x="760" y="1685" width="140" height="38" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="1.5"/>
+  <text x="820" y="1701" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffa657">ChromaDB</text>
+  <text x="820" y="1715" text-anchor="middle" font-size="9"  fill="#8b949e">similarity search</text>
+
+  <!-- results back -->
+  <line x1="760" y1="1730" x2="702" y2="1730" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <rect x="560" y="1740" width="140" height="38" rx="7" fill="#0d1117" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="630" y="1756" text-anchor="middle" font-size="10" font-weight="bold" fill="#79c0ff">Sends Results</text>
+  <text x="630" y="1770" text-anchor="middle" font-size="9"  fill="#8b949e">via MCP protocol</text>
+  <line x1="560" y1="1759" x2="502" y2="1759" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+
+  <!-- step labels on right -->
+  <text x="910" y="1700" font-size="9" fill="#484f58">mcp_server</text>
+  <text x="910" y="1712" font-size="9" fill="#484f58">_tool_call</text>
+  <text x="910" y="1762" font-size="9" fill="#484f58">mcp_server</text>
+  <text x="910" y="1774" font-size="9" fill="#484f58">_tool_result</text>
+
+  <!-- LLM also calls Google Search -->
+  <line x1="430" y1="1759" x2="430" y2="1777" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1779" width="140" height="38" rx="7" fill="#0d1117" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="430" y="1795" text-anchor="middle" font-size="10" font-weight="bold" fill="#d2a8ff">Also calls</text>
+  <text x="430" y="1809" text-anchor="middle" font-size="9"  fill="#8b949e">Google Search tool</text>
+  <text x="910" y="1800" font-size="9" fill="#484f58">google_search</text>
+  <text x="910" y="1812" font-size="9" fill="#484f58">_call / _result</text>
+
+  <!-- final answer -->
+  <line x1="430" y1="1817" x2="430" y2="1832" stroke="#d2a8ff" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <rect x="360" y="1834" width="140" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="430" y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">✅ Final Answer</text>
+  <text x="430" y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">both sources used</text>
+  <line x1="360" y1="1853" x2="292" y2="1853" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <rect x="170" y="1834" width="120" height="38" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="230" y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#3fb950">JSON Response</text>
+  <text x="230" y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">steps + answer</text>
+  <line x1="170" y1="1853" x2="152" y2="1853" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <rect x="30"  y="1834" width="120" height="38" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="90"  y="1850" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">You Get</text>
+  <text x="90"  y="1864" text-anchor="middle" font-size="9"  fill="#8b949e">all steps visible</text>
+  <text x="910" y="1853" font-size="9" fill="#484f58">model_output</text>
+
+  <!-- MCP tools exposed box -->
+  <rect x="20" y="1885" width="940" height="58" rx="7" fill="#161b22" stroke="#79c0ff" stroke-width="1"/>
+  <text x="40" y="1903" font-size="11" font-weight="bold" fill="#79c0ff">Tools exposed by mcp_server/server.py  (LLM discovers these automatically):</text>
+  <text x="40" y="1920" font-size="10" fill="#8b949e">• search_knowledge_base(query, top_k)   — searches ChromaDB by semantic similarity, returns matching documents</text>
+  <text x="40" y="1934" font-size="10" fill="#8b949e">• add_document_to_kb(text, topic)        — embeds text and stores it in ChromaDB    • get_kb_stats()  — counts documents in the KB</text>
+  <!-- ═════════════════════════════════ SECTION 6: MULTI-AGENT ══ -->
+  <rect x="20" y="1960" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1979" text-anchor="middle" font-size="13" font-weight="bold" fill="#e3b341">⑥ MULTI-AGENT FLOW — POST /multi-agent-chat   (Orchestrator coordinates 3 specialist agents)</text>
+
+  <!-- explanation box -->
+  <rect x="20" y="1997" width="940" height="58" rx="7" fill="#161b22" stroke="#e3b341" stroke-width="1"/>
+  <text x="40" y="2015" font-size="11" font-weight="bold" fill="#e3b341">What is Multi-Agent?</text>
+  <text x="180" y="2015" font-size="10" fill="#8b949e">Instead of one LLM doing everything, create SPECIALIST agents — each focused on one job. Your code (orchestrator) decides which runs and in what order.</text>
+  <text x="40" y="2031" font-size="10" fill="#8b949e">KEY difference from MCP: in MCP the LLM picks its tools autonomously; in Multi-Agent YOUR CODE controls the sequence and every agent’s output is separately visible.</text>
+  <text x="40" y="2047" font-size="10" fill="#e3b341">Analogy: a research team — researcher + archivist + editor, each doing their job. Combined result is higher quality than one person doing everything.</text>
+
+  <!-- row 1: YOU sends question (centered) -->
+  <rect x="315" y="2068" width="200" height="36" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="415" y="2084" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /multi-agent-chat</text>
+  <text x="415" y="2097" text-anchor="middle" font-size="9" fill="#8b949e">“your question”</text>
+
+  <!-- arrow to orchestrator -->
+  <line x1="415" y1="2104" x2="415" y2="2118" stroke="#e3b341" stroke-width="1.5" marker-end="url(#a-orange)"/>
+
+  <!-- Orchestrator box -->
+  <rect x="265" y="2120" width="300" height="36" rx="7" fill="#0d1117" stroke="#e3b341" stroke-width="2"/>
+  <text x="415" y="2136" text-anchor="middle" font-size="10" font-weight="bold" fill="#e3b341">Orchestrator — multi_runner.py</text>
+  <text x="415" y="2150" text-anchor="middle" font-size="9" fill="#8b949e">run_multi_agent() — controls the sequence</text>
+
+  <!-- fork: orchestrator → Agent 1 (left) and Agent 2 (right) -->
+  <line x1="325" y1="2138" x2="195" y2="2175" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a-blue)"/>
+  <text x="222" y="2163" font-size="9" fill="#484f58">Step 1</text>
+  <line x1="505" y1="2138" x2="645" y2="2175" stroke="#ffa657" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a-orange)"/>
+  <text x="568" y="2163" font-size="9" fill="#484f58">Step 2</text>
+
+  <!-- Agent 1: Research Agent (left) -->
+  <rect x="20" y="2180" width="340" height="70" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="190" y="2198" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">Agent 1 — Research Agent</text>
+  <text x="190" y="2213" text-anchor="middle" font-size="9" fill="#8b949e">Tool: Google Search (live internet)</text>
+  <text x="190" y="2227" text-anchor="middle" font-size="9" fill="#8b949e">run_research_agent() → run_agent()</text>
+  <text x="190" y="2242" text-anchor="middle" font-size="9" fill="#58a6ff">Output: internet_answer + flow_summary</text>
+
+  <!-- Agent 2: Knowledge Agent (right) -->
+  <rect x="460" y="2180" width="340" height="70" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="2"/>
+  <text x="630" y="2198" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">Agent 2 — Knowledge Agent</text>
+  <text x="630" y="2213" text-anchor="middle" font-size="9" fill="#8b949e">Tool: ChromaDB semantic search (no internet)</text>
+  <text x="630" y="2227" text-anchor="middle" font-size="9" fill="#8b949e">run_knowledge_agent() → retriever.search()</text>
+  <text x="630" y="2242" text-anchor="middle" font-size="9" fill="#ffa657">Output: kb_answer + docs_retrieved</text>
+
+  <!-- converge arrows to Synthesizer -->
+  <line x1="190" y1="2250" x2="360" y2="2288" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <line x1="630" y1="2250" x2="475" y2="2288" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <text x="288" y="2275" font-size="9" fill="#484f58">Step 3</text>
+
+  <!-- Agent 3: Synthesizer -->
+  <rect x="245" y="2293" width="340" height="70" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="415" y="2311" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">Agent 3 — Synthesizer Agent</text>
+  <text x="415" y="2326" text-anchor="middle" font-size="9" fill="#8b949e">Tool: none — pure LLM reasoning</text>
+  <text x="415" y="2340" text-anchor="middle" font-size="9" fill="#8b949e">“Combine both, label [Internet] / [KB]”</text>
+  <text x="415" y="2354" text-anchor="middle" font-size="9" fill="#3fb950">Output: final_answer with source labels</text>
+
+  <!-- Synthesizer → YOU -->
+  <line x1="415" y1="2363" x2="415" y2="2379" stroke="#3fb950" stroke-width="2" marker-end="url(#a-green)"/>
+  <rect x="305" y="2381" width="220" height="36" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="415" y="2397" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">YOU receive JSON</text>
+  <text x="415" y="2410" text-anchor="middle" font-size="9" fill="#8b949e">all 3 agents visible + final_answer</text>
+
+  <!-- response fields + key diff box -->
+  <rect x="20" y="2428" width="940" height="44" rx="7" fill="#161b22" stroke="#e3b341" stroke-width="1"/>
+  <text x="40" y="2446" font-size="11" font-weight="bold" fill="#e3b341">Response fields:  multi_agent_summary  •  agents[].agent_name  •  agents[].role  •  agents[].answer  •  agents[].flow_summary  •  final_answer</text>
+  <text x="40" y="2462" font-size="10" fill="#8b949e">Multi-Agent vs MCP: Multi-Agent = YOUR CODE controls the order (predictable, transparent). MCP = LLM decides autonomously. Both use internet + KB; sources differ in who chooses.</text>
+  <!-- ═══════════════════════════════════════ ARROW DEFS ══ -->
+  <defs>
+    <marker id="a-blue"   markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#58a6ff"/></marker>
+    <marker id="a-green"  markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#3fb950"/></marker>
+    <marker id="a-purple" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#d2a8ff"/></marker>
+    <marker id="a-orange" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#ffa657"/></marker>
+    <marker id="a-sdk"    markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#79c0ff"/></marker>
+  </defs>
+</svg>
