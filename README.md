@@ -32,7 +32,44 @@ This app demonstrates the 4 patterns companies use to solve that:
 
 **The single change needed:** Run `POST /documents` (or update `POST /documents/seed`) with your real documents instead of the sample AI glossary docs. The architecture, code, and endpoints stay exactly the same.
 
-> **Key insight:** The sample documents in this app are about AI concepts (RAG, embeddings, etc.) purely so you can *learn* the concepts while testing the system. In production, you replace those with whatever your business actually needs.
+> **Key insight:** The sample documents in this app are Acme Corp business policies — real, relatable content so every concept clicks immediately. In your own project, replace these with your actual documents and the architecture stays exactly the same.
+
+---
+
+## The Scenario — Acme Corp AI Assistant
+
+To make every concept concrete, this app uses a single running example throughout:
+
+> **You are the AI team at Acme Corp, an online retailer.**
+> Your manager asks: *"Can we build a chatbot that instantly answers customer questions about our return policy, shipping costs, warranties, and membership — without them having to search the website?"*
+
+This is exactly what this app builds. The 7 documents loaded by `POST /documents/seed` are Acme Corp's real business policies:
+
+| Document ID | What it contains |
+|---|---|
+| `acme-return-001` | 30-day return policy, electronics exception, how to start a return |
+| `acme-shipping-002` | Shipping costs, delivery times, free shipping threshold ($50) |
+| `acme-warranty-003` | 1-year warranty, what's covered, how to make a claim |
+| `acme-refund-004` | Refund timelines, store credit, partial refunds |
+| `acme-support-005` | Support hours, phone / email / chat contacts |
+| `acme-membership-006` | Premium plan ($9.99/month), benefits, cancellation policy |
+| `acme-orders-007` | Order tracking, cancellation window, what to do if delayed |
+
+**This is where the vector database becomes real.** A customer types:
+
+> *"Can I send back something I bought last week?"*
+
+That sentence has **zero words in common** with "30-day return policy". But they mean the same thing. Here is exactly what happens:
+
+| Step | What happens | Code |
+|---|---|---|
+| 1 | Question → 768 numbers (embedding vector) | `GeminiEmbeddingFunction` in `store.py` |
+| 2 | Compare to every stored document's vector | `ChromaDB.query()` in `retriever.py` |
+| 3 | `acme-return-001` scores ~0.91 similarity | Cosine similarity — closest *meaning* wins |
+| 4 | LLM reads **only** that document | Constrained prompt in `rag.py` |
+| 5 | Answers: "Yes, returns are accepted within 30 days…" | Grounded in Acme's exact policy |
+
+**Why not just use keyword search?** A customer might write "get my money back", "send it back", "wrong size", or "I changed my mind" — none contain "return policy", but all should find `acme-return-001`. Vector search finds them all. Keyword search misses them all.
 
 
 
@@ -337,15 +374,15 @@ Or with curl:
 curl -X POST http://127.0.0.1:8000/documents/seed
 ```
 
-**What it does:** Loads 7 sample documents about RAG, embeddings, ChromaDB, AI agents, LLMs, and FastAPI into ChromaDB. Each document is converted to a 768-number vector by Gemini's embedding model and saved to disk (`chroma_db/` folder).
+**What it does:** Loads 7 Acme Corp business policy documents into ChromaDB (return policy, shipping, warranty, refunds, support hours, membership, order tracking). Each document is converted to a 768-number vector by Gemini’s embedding model and saved to disk (`chroma_db/` folder).
 
 **What you see:**
 ```json
 {
-  "message": "Added 7 sample documents.",
-  "added_ids": ["rag-001", "vec-001", "emb-001", ...],
+  "message": "Added 7 Acme Corp business policy documents.",
+  "added_ids": ["acme-return-001", "acme-shipping-002", "acme-warranty-003", "acme-refund-004", "acme-support-005", "acme-membership-006", "acme-orders-007"],
   "total_in_db": 7,
-  "tip": "Now try POST /rag-chat with a question like 'What is RAG?'"
+  "tip": "Now try POST /rag-chat with: 'What is the return policy?'"
 }
 ```
 
@@ -368,15 +405,15 @@ In browser: http://127.0.0.1:8000/documents
 In docs: click **POST /documents → Try it out** → paste this body → Execute:
 ```json
 {
-  "text": "FastAPI automatically generates interactive API documentation at the /docs endpoint using OpenAPI and Swagger UI. This makes it very easy to test endpoints without writing any code.",
+  "text": "Acme Corp Gift Wrapping: Gift wrapping is available for $3.99 per item. Add a personalised message card at no extra charge. Gift-wrapped items arrive in a branded Acme gift box with a ribbon. Select 'gift wrap' at checkout. Not available for oversized items.",
   "metadata": {
-    "source": "my notes",
-    "topic": "FastAPI"
+    "source": "Acme Corp Checkout Guide",
+    "topic": "gift wrapping"
   }
 }
 ```
 
-**What happens:** Your text is sent to Gemini's `text-embedding-004` model, which returns a 768-number vector representing the meaning. That vector + your text is saved to ChromaDB. It will now be searchable by meaning.
+**What happens:** Your text is sent to Gemini’s `text-embedding-004` model, which returns a 768-number vector representing the meaning. That vector + your text is saved to ChromaDB. Now if a customer asks *“Do you do gift packaging?”* — this document will be retrieved, even though it says “gift wrapping” not “gift packaging”.
 
 ---
 
@@ -387,7 +424,7 @@ In docs: click **POST /documents → Try it out** → paste this body → Execut
 In docs: click **POST /documents/rag-chat → Try it out** → paste this → Execute:
 ```json
 {
-  "question": "What is RAG and how does it work?",
+  "question": "What is the return policy?",
   "top_k": 3
 }
 ```
@@ -396,7 +433,7 @@ Or with curl:
 ```bash
 curl -X POST http://127.0.0.1:8000/documents/rag-chat \
   -H "Content-Type: application/json" \
-  -d '{"question": "What is RAG and how does it work?", "top_k": 3}'
+  -d '{"question": "What is the return policy?", "top_k": 3}'
 ```
 
 **What you see:** (read `rag_flow_summary` first)
@@ -405,41 +442,43 @@ curl -X POST http://127.0.0.1:8000/documents/rag-chat \
   "rag_flow_summary": [
     "[1] Embedded question using Gemini text-embedding-004",
     "[2] Searched 7 documents in ChromaDB → retrieved top 3",
-    "    • Doc 'rag-001' (similarity: 0.94) — RAG stands for Retrieval...",
-    "    • Doc 'vec-001' (similarity: 0.81) — A vector database stores...",
-    "    • Doc 'emb-001' (similarity: 0.76) — An embedding is a list...",
+    "    • Doc 'acme-return-001' (similarity: 0.91) — Acme Corp Return Policy: Customers may...",
+    "    • Doc 'acme-refund-004' (similarity: 0.78) — Acme Corp Refund Process: Refunds are...",
+    "    • Doc 'acme-orders-007' (similarity: 0.61) — Acme Corp Order Tracking...",
     "[3] Built context block from 3 retrieved documents",
     "[4] Sent prompt to gemini-2.5-flash with context injected",
     "[5] LLM answered using ONLY the retrieved context (no internet)"
   ],
   "retrieved_documents": [
     {
-      "doc_id": "rag-001",
-      "text": "RAG stands for Retrieval Augmented Generation...",
-      "similarity_score": 0.94,
-      "metadata": {"topic": "RAG", "source": "AI glossary"}
+      "doc_id": "acme-return-001",
+      "text": "Acme Corp Return Policy: Customers may return...",
+      "similarity_score": 0.91,
+      "metadata": {"topic": "returns", "department": "customer_service"}
     }
   ],
-  "context_used": "[Document 1 | similarity: 0.94]\nRAG stands for...",
-  "answer": "RAG (Retrieval Augmented Generation) works by..."
+  "context_used": "[Document 1 | similarity: 0.91]\nAcme Corp Return Policy...",
+  "answer": "Acme Corp accepts returns within 30 days of purchase..."
 }
 ```
 
 **What is happening inside:**
 | step | what is actually happening |
 |---|---|
-| Embed question | `"What is RAG?"` → 768-number vector via Gemini embedding |
-| Search ChromaDB | Vector compared to all stored vectors using cosine similarity |
-| Retrieve top 3 | 3 most semantically similar documents returned with scores |
+| Embed question | `"What is the return policy?"` → 768-number vector via Gemini embedding |
+| Search ChromaDB | Vector compared to all 7 stored document vectors using cosine similarity |
+| Retrieve top 3 | `acme-return-001` scores highest (return policy = most relevant meaning) |
 | Build context | Documents formatted into a text block |
-| LLM prompt | `"Answer using ONLY this context: [docs] QUESTION: What is RAG?"` |
-| LLM answers | Gemini reads only the provided context — cannot make up info |
+| LLM prompt | `"Answer using ONLY this context: [Acme docs] QUESTION: What is the return policy?"` |
+| LLM answers | Reads only the Acme policy document — cannot make things up |
 
-**Experiment 1:** Ask `"What is ChromaDB?"` — it should find the ChromaDB document.
+**Experiment 1:** Ask `"How long does delivery take?"` — ChromaDB should find `acme-shipping-002`. Notice the question uses “delivery” but the doc says “shipping” — vector search finds it anyway.
 
-**Experiment 2:** Ask `"What is the weather today?"` — it will say it doesn't have that information, because weather is not in your documents. This shows the LLM is actually constrained to your knowledge base.
+**Experiment 2:** Ask `"What is the weather today?"` — the LLM will say it doesn’t have that information. Weather is not in Acme’s documents. This proves the LLM is genuinely constrained to your knowledge base.
 
-**Experiment 3:** Change `top_k` to 1 vs 5 — see how fewer/more documents affect the answer.
+**Experiment 3:** Ask `"Can I get my money back?"` — no word matches “refund” but it should still find `acme-refund-004`. This is the clearest demonstration of why vector search beats keyword search.
+
+**Experiment 4:** Change `top_k` from 3 to 1 — the answer becomes less complete because the LLM only sees one document. Change to 5 — it sees more context and can give a richer answer.
 
 ---
 

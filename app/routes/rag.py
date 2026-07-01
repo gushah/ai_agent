@@ -33,86 +33,92 @@ from app.vectordb.retriever import (
 
 router = APIRouter(prefix="/documents", tags=["RAG — Vector Database"])
 
-# ── Sample documents to seed the knowledge base for learning ──────────────────
+# ── Sample documents — Acme Corp business policies (realistic scenario) ───────
 SAMPLE_DOCUMENTS = [
     {
-        "doc_id": "rag-001",
+        "doc_id": "acme-return-001",
         "text": (
-            "RAG stands for Retrieval Augmented Generation. It is a technique that "
-            "combines a vector database with a large language model. Instead of the LLM "
-            "relying only on its training data, RAG retrieves relevant documents from a "
-            "database at query time and injects them as context into the prompt. This "
-            "lets the LLM answer questions about private or recent information it was "
-            "never trained on."
+            "Acme Corp Return Policy: Customers may return any unused item within 30 days "
+            "of purchase for a full refund. Items must be in their original packaging. "
+            "Electronics have a shorter 15-day return window. To start a return, visit "
+            "acmecorp.com/returns or call 1-800-ACME-123. Refunds are processed within "
+            "5-7 business days to the original payment method. Sale items are final sale "
+            "and cannot be returned under any circumstances."
         ),
-        "metadata": {"topic": "RAG", "source": "AI glossary"},
+        "metadata": {"topic": "returns", "department": "customer_service", "source": "Acme Corp Policy v2.1"},
     },
     {
-        "doc_id": "vec-001",
+        "doc_id": "acme-shipping-002",
         "text": (
-            "A vector database stores text as high-dimensional numerical vectors called "
-            "embeddings. When you search, your query is also converted to a vector and "
-            "the database finds stored vectors that are mathematically close — meaning "
-            "semantically similar. ChromaDB, Pinecone, and pgvector are popular vector "
-            "databases. ChromaDB runs entirely locally with no external service required."
+            "Acme Corp Shipping Information: Standard shipping takes 5-7 business days "
+            "and costs $4.99 for orders under $50. Orders over $50 qualify for free "
+            "standard shipping automatically. Express shipping (2-3 days) costs $12.99. "
+            "Overnight shipping costs $24.99 and must be placed before 2pm EST. "
+            "International shipping is available to 45 countries starting at $19.99. "
+            "All orders are dispatched within 1 business day of purchase."
         ),
-        "metadata": {"topic": "vector database", "source": "AI glossary"},
+        "metadata": {"topic": "shipping", "department": "logistics", "source": "Acme Corp Policy v2.1"},
     },
     {
-        "doc_id": "emb-001",
+        "doc_id": "acme-warranty-003",
         "text": (
-            "An embedding is a list of numbers (a vector) that represents the meaning "
-            "of a piece of text in a high-dimensional space. Similar texts produce "
-            "vectors that are close together. For example, 'dog' and 'puppy' will have "
-            "similar embeddings even though they are different words. Gemini's "
-            "text-embedding-004 model produces 768-dimensional embeddings."
+            "Acme Corp Warranty: All Acme products include a 1-year limited warranty "
+            "covering manufacturing defects. Premium Electronics carry a 2-year warranty. "
+            "The warranty does not cover accidental damage, water damage, or normal wear "
+            "and tear. To make a warranty claim, email support@acmecorp.com with your "
+            "order number and a photo of the issue. Approved claims receive a free "
+            "replacement or repair at no cost to the customer."
         ),
-        "metadata": {"topic": "embeddings", "source": "AI glossary"},
+        "metadata": {"topic": "warranty", "department": "customer_service", "source": "Acme Corp Policy v2.1"},
     },
     {
-        "doc_id": "agent-001",
+        "doc_id": "acme-refund-004",
         "text": (
-            "An AI agent is an LLM that can take actions by calling tools. Unlike a "
-            "simple chatbot that just responds, an agent can decide to call Google "
-            "Search, run code, or query a database. The agent loops — it thinks, acts, "
-            "observes the result, thinks again — until it has enough information to "
-            "give a final answer. This loop is called the ReAct pattern "
-            "(Reasoning + Acting)."
+            "Acme Corp Refund Process: Refunds are issued to the original payment method "
+            "within 5-7 business days after the returned item is received at our warehouse. "
+            "Store credit is available immediately upon return approval if preferred. "
+            "Gift card purchases are refunded as store credit only. Partial refunds may "
+            "be issued for items returned without original packaging. If your refund has "
+            "not appeared after 10 business days, contact billing@acmecorp.com."
         ),
-        "metadata": {"topic": "AI agents", "source": "AI glossary"},
+        "metadata": {"topic": "refunds", "department": "billing", "source": "Acme Corp Policy v2.1"},
     },
     {
-        "doc_id": "llm-001",
+        "doc_id": "acme-support-005",
         "text": (
-            "A Large Language Model (LLM) is a neural network trained on vast amounts "
-            "of text to predict the next token. At inference time, the model takes a "
-            "prompt (input text) and generates a response token by token. Modern LLMs "
-            "like Gemini 2.5 Flash have context windows of 1 million tokens and can "
-            "reason, write code, summarise documents, and call external tools."
+            "Acme Corp Customer Support Hours: Our support team is available Monday to "
+            "Friday 9am-6pm EST and Saturday 10am-4pm EST. We are closed on Sundays and "
+            "public holidays. Contact us by phone at 1-800-ACME-123, by email at "
+            "support@acmecorp.com, or via live chat at acmecorp.com/chat. Average email "
+            "response time is 4 hours during business hours. For urgent issues, phone "
+            "or live chat is recommended. Our team speaks English, Spanish, and French."
         ),
-        "metadata": {"topic": "LLM", "source": "AI glossary"},
+        "metadata": {"topic": "support", "department": "customer_service", "source": "Acme Corp Support Guide"},
     },
     {
-        "doc_id": "chroma-001",
+        "doc_id": "acme-membership-006",
         "text": (
-            "ChromaDB is an open-source vector database that runs locally in Python "
-            "with no external service. You can store documents with their embeddings "
-            "and query by semantic similarity. ChromaDB supports pluggable embedding "
-            "functions — in this project we use Gemini's text-embedding-004 model. "
-            "Data is persisted to a local folder called chroma_db/."
+            "Acme Corp Premium Membership: The Acme Premium plan costs $9.99 per month "
+            "or $89 per year (save 26%). Benefits include: free express shipping on all "
+            "orders, 10% discount on every purchase, early access to sales and new "
+            "products, priority support with 1-hour response time, and a free birthday "
+            "gift every year. Members earn 3x reward points on every purchase compared "
+            "to 1x for standard accounts. Cancel anytime with no cancellation fees."
         ),
-        "metadata": {"topic": "ChromaDB", "source": "project docs"},
+        "metadata": {"topic": "membership", "department": "marketing", "source": "Acme Corp Premium Guide"},
     },
     {
-        "doc_id": "fastapi-001",
+        "doc_id": "acme-orders-007",
         "text": (
-            "FastAPI is a modern Python web framework for building APIs. It uses Python "
-            "type hints and Pydantic models to automatically validate request/response "
-            "data and generate OpenAPI documentation. FastAPI is asynchronous-first and "
-            "one of the fastest Python frameworks. In this project, FastAPI is the HTTP "
-            "layer that sits between the user and the Gemini LLM."
+            "Acme Corp Order Tracking and Cancellation: After placing an order you will "
+            "receive a confirmation email within 15 minutes. Once shipped, a tracking "
+            "number is sent by email within 24 hours. Track your order at "
+            "acmecorp.com/track or via the Acme mobile app. Orders can be cancelled "
+            "within 1 hour of placement for a full refund. If your order shows 'delayed' "
+            "for more than 3 business days, contact support for a free shipping upgrade "
+            "on your next order."
         ),
-        "metadata": {"topic": "FastAPI", "source": "project docs"},
+        "metadata": {"topic": "orders", "department": "logistics", "source": "Acme Corp Order Guide"},
     },
 ]
 
@@ -138,10 +144,10 @@ def seed_documents():
 
     ids = add_documents(to_add)
     return {
-        "message": f"Added {len(ids)} sample documents.",
+        "message": f"Added {len(ids)} Acme Corp business policy documents.",
         "added_ids": ids,
         "total_in_db": document_count(),
-        "tip": "Now try POST /rag-chat with a question like 'What is RAG?'",
+        "tip": "Now try POST /rag-chat with: 'What is the return policy?' or 'How much does shipping cost?'",
     }
 
 
