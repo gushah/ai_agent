@@ -124,3 +124,42 @@ class RagResponse(BaseModel):
     context_used: str                          # the text fed to the LLM as context
     rag_flow_summary: list[str]               # step-by-step what happened
     answer: str
+
+
+# ── Multi-Agent models ────────────────────────────────────────────────────────
+# Used by POST /multi-agent-chat
+
+
+class AgentResult(BaseModel):
+    """
+    The output from one specialist agent in the multi-agent pipeline.
+
+    agent_name  : machine-readable ID ("research_agent", "knowledge_agent", etc.)
+    role        : human-readable description of what this agent does
+    answer      : this agent's output text
+    flow_summary: what steps this agent took to produce its answer
+    """
+
+    agent_name: str
+    role: str
+    answer: str
+    flow_summary: list[str] = []
+
+
+class MultiAgentResponse(BaseModel):
+    """
+    Full response from POST /multi-agent-chat.
+
+    Shows each specialist agent's individual contribution and the final
+    synthesized answer that combines all of them.
+
+    multi_agent_summary : quick 3-line overview — read this first
+    agents[]            : each agent's name, role, answer, and how they got it
+    final_answer        : the synthesizer agent's combined output
+    """
+
+    question: str
+    model_used: str
+    multi_agent_summary: list[str]
+    agents: list[AgentResult]
+    final_answer: str

@@ -83,6 +83,13 @@ A Python web framework that turns Python functions into HTTP endpoints. It autom
 
 > **Real-world analogy:** FastAPI is like a restaurant. The menu at `/docs` shows all available dishes (endpoints). You place an order (HTTP request with JSON body). The kitchen (your Python function) prepares it. The waiter returns your order (JSON response). Pydantic is the waiter who checks your order is valid before sending it to the kitchen.
 
+### What is Multi-Agent?
+A single AI agent can only do so many things well. **Multi-Agent** means you create several specialist agents — each focused on one job — and an **orchestrator** coordinates them. Agent 1 might search the internet. Agent 2 might search your private documents. Agent 3 might combine their outputs into a final answer. Each agent is just a focused LLM call with a specific prompt and specific tools.
+
+> **Real-world analogy:** Instead of asking one person to research a topic, write a report, AND fact-check it — you hire a research team. The researcher finds facts, the archivist checks the internal records, and the editor combines everything into the final document. Better results because everyone stays in their lane.
+
+> **Multi-Agent vs MCP:** In MCP, the LLM autonomously picks which tools to use. In Multi-Agent, *your code* decides which agents to run and in what order. You have more control and visibility.
+
 ### What is MCP (Model Context Protocol)?
 MCP is an open standard created by Anthropic — think of it as a **USB-C port for AI tools**. Before MCP, every AI tool integration was custom-built differently. MCP standardises the way an LLM discovers and calls external tools. You build an MCP server that *exposes functions*, and any LLM that speaks MCP can call those functions. In this project the MCP server exposes your ChromaDB knowledge base as callable tools (`search_knowledge_base`, `add_document_to_kb`, `get_kb_stats`). The LLM then autonomously decides when to call them.
 
@@ -122,7 +129,8 @@ ai_learning/
 │   │
 │   ├── agent/                     ← AI Agent logic
 │   │   ├── runner.py              ← THE CORE: calls Gemini, collects all steps
-│   │   └── parser.py             ← Converts each raw SDK step → readable AgentStep
+│   │   ├── parser.py             ← Converts each raw SDK step → readable AgentStep
+│   │   └── multi_runner.py        ← Orchestrates 3 specialist agents (multi-agent)
 │   │
 │   ├── vectordb/                  ← Vector Database logic
 │   │   ├── store.py               ← ChromaDB setup + Gemini embedding function
@@ -132,6 +140,7 @@ ai_learning/
 │       ├── chat.py                ← POST /chat       (Agent + Google Search)
 │       ├── rag.py                 ← POST /documents/rag-chat  (Manual RAG)
 │       ├── mcp_chat.py            ← POST /mcp-chat   (Agent + Google Search + ChromaDB via MCP)
+│       ├── multi_agent.py         ← POST /multi-agent-chat  (3 specialist agents)
 │       └── info.py                ← GET /,  GET /models,  GET /flow-explained
 │
 ├── mcp_server/
@@ -475,6 +484,66 @@ curl -X POST http://127.0.0.1:8000/mcp-chat \
 
 ---
 
+### ⚪ STEP K — Multi-Agent Chat (3 specialists cooperate)
+
+**Endpoint:** `POST /multi-agent-chat`
+
+```bash
+curl -X POST http://127.0.0.1:8000/multi-agent-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is RAG and how is it used in production AI systems?"}'
+```
+
+**What makes this different from everything else:**
+
+You don't get one answer. You get **three agents' answers** plus a synthesized final:
+
+| | What it does | Knowledge source |
+|---|---|---|
+| **research_agent** | Searches Google for current info | Internet |
+| **knowledge_agent** | Searches ChromaDB for relevant docs | Your private KB |
+| **synthesizer_agent** | Combines both into one answer | Both, labelled |
+
+**What you see:**
+```json
+{
+  "multi_agent_summary": [
+    "[Agent 1] research_agent     → searched internet for: 'What is RAG...'",
+    "[Agent 2] knowledge_agent    → searched ChromaDB knowledge base",
+    "[Agent 3] synthesizer_agent  → combined both sources → final answer below"
+  ],
+  "agents": [
+    {
+      "agent_name": "research_agent",
+      "role": "Internet Researcher — uses Google Search to find current information",
+      "answer": "RAG (Retrieval Augmented Generation) is a technique that...",
+      "flow_summary": ["[0] USER → User Question", "[1] AGENT → google_search_call", ...]
+    },
+    {
+      "agent_name": "knowledge_agent",
+      "role": "Knowledge Base Expert — searches your private ChromaDB documents",
+      "answer": "Based on your documents: RAG stands for...",
+      "flow_summary": ["Searched ChromaDB — retrieved 3 doc(s): rag-001 (score=0.94), ..."]
+    },
+    {
+      "agent_name": "synthesizer_agent",
+      "role": "Synthesizer — combines both agents' findings into one final answer",
+      "answer": "[Internet] RAG is widely used in production... [Knowledge Base] Your docs explain...",
+      "flow_summary": ["Combined research_agent + knowledge_agent outputs"]
+    }
+  ],
+  "final_answer": "[Internet] RAG (Retrieval Augmented Generation)... [Knowledge Base] According to your docs..."
+}
+```
+
+**Experiment 1:** Ask `"What is an LLM?"` — knowledge_agent will find your seeded `llm-001` doc AND research_agent will search Google. Compare the two answers before reading the synthesized one.
+
+**Experiment 2:** Ask something NOT in your knowledge base, like `"What is the latest iPhone?"`. Knowledge agent will say "No relevant documents found." Synthesizer will use only the internet source.
+
+**Experiment 3:** Compare `/chat` vs `/multi-agent-chat` on the same question. The multi-agent answer will have [Internet] and [Knowledge Base] labels, making sources completely transparent.
+
+---
+
 ## Understanding the Responses
 
 ### Agent flow response fields (`POST /chat`)
@@ -508,6 +577,17 @@ Same shape as `/chat` (ChatResponse). The difference is in the step types inside
 The `data` field of `mcp_server_tool_call` tells you:
 - `tool` — which function was called (`search_knowledge_base`, `add_document_to_kb`, `get_kb_stats`)
 - `arguments` — what arguments the LLM passed to the function
+
+### Multi-Agent flow response fields (`POST /multi-agent-chat`)
+
+| field | what it is |
+|---|---|
+| `multi_agent_summary` | Quick 3-line overview — read this first |
+| `agents[].agent_name` | `research_agent`, `knowledge_agent`, or `synthesizer_agent` |
+| `agents[].role` | Human-readable description of what this agent does |
+| `agents[].answer` | This agent's individual output |
+| `agents[].flow_summary` | Steps this agent took (shows Google Search calls, ChromaDB results) |
+| `final_answer` | The synthesizer agent's combined output |
 
 ### Similarity score guide
 
@@ -685,19 +765,71 @@ Gemini connects to http://localhost:8001/mcp
     calls them whenever it decides to — completely autonomously
 ```
 
+### Flow 4 — Multi-Agent flow (POST /multi-agent-chat), step by step in plain English
+
+```
+Step 1  YOU send:  POST /multi-agent-chat  { "message": "What is RAG?" }
+
+Step 2  FastAPI receives the request.
+        multi_agent.py validates the JSON.
+
+Step 3  multi_runner.py ORCHESTRATES the agents:
+
+        ┌───────────────────────────────────────────────────────────────────┐
+        │  AGENT 1: Research Agent                                          │
+        │  Prompt: "Find current information about: What is RAG?"           │
+        │  Tool: Google Search                                              │
+        │  Internally: LLM thinks → calls Google → reads results → answers │
+        │  Output: answer_from_internet                                     │
+        └───────────────────────────────────────────────────────────────────┘
+                                     ↓
+        ┌───────────────────────────────────────────────────────────────────┐
+        │  AGENT 2: Knowledge Agent                                         │
+        │  Embeds question → searches ChromaDB → retrieves matching docs     │
+        │  Tool: ChromaDB semantic search (no internet)                     │
+        │  Prompt: "Answer using ONLY these documents: [docs]"              │
+        │  Output: answer_from_knowledge_base                               │
+        └───────────────────────────────────────────────────────────────────┘
+                                     ↓
+        ┌───────────────────────────────────────────────────────────────────┐
+        │  AGENT 3: Synthesizer Agent                                       │
+        │  Input: answer_from_internet + answer_from_knowledge_base         │
+        │  Prompt: "Combine these, label each fact [Internet]/[KB]"         │
+        │  Output: combined_final_answer                                    │
+        └───────────────────────────────────────────────────────────────────┘
+
+Step 4  YOU receive: JSON with all 3 agents' answers + final synthesized answer.
+        Each agent's answer tells you where its knowledge came from.
+```
+
+**Code file path:**
+```
+multi_agent.py → multi_runner.run_multi_agent()
+    ├─ run_research_agent()  → runner.run_agent() → Gemini + Google Search → parser.py
+    ├─ run_knowledge_agent() → retriever.search() → ChromaDB → Gemini generate_content()
+    └─ run_synthesizer_agent() → Gemini generate_content() with combined prompt
+    → MultiAgentResponse JSON
+```
+
+**Key difference from MCP:**
+```
+MCP flow:         YOU give LLM two tools → LLM autonomously decides when to call each
+Multi-Agent flow: YOUR CODE decides to run 3 agents in order → you have full control
+```
+
 ---
 
-### All 3 flows side by side — key differences
+### All 4 flows side by side — key differences
 
-| | Flow 1: Agent `/chat` | Flow 2: RAG `/rag-chat` | Flow 3: MCP `/mcp-chat` |
-|---|---|---|---|
-| **Who decides to search?** | LLM decides | Your code always searches | LLM decides |
-| **Knowledge source** | Live internet | Your ChromaDB only | Both — LLM picks |
-| **LLM gets context from** | Google Search results | Your retrieved docs | Both sources |
-| **You control the search?** | No | Yes (always runs) | No |
-| **New step types** | `google_search_call` | *(no agent steps)* | `mcp_server_tool_call` |
-| **Best for** | Current events, facts | Private/company data | Mixed questions |
-| **Needs MCP server?** | No | No | Yes (port 8001) |
+| | Flow 1: Agent `/chat` | Flow 2: RAG `/rag-chat` | Flow 3: MCP `/mcp-chat` | Flow 4: Multi-Agent `/multi-agent-chat` |
+|---|---|---|---|---|
+| **Who decides to search?** | LLM decides | Your code always searches | LLM decides | Your code (orchestrator) |
+| **Knowledge source** | Live internet | Your ChromaDB only | Both — LLM picks | Both — always uses both |
+| **LLM gets context from** | Google Search results | Your retrieved docs | Both sources | Each agent gets its own context |
+| **You control the flow?** | No | Yes | No | Yes |
+| **Agents visible** | 1 (the LLM) | 0 (no agent steps) | 1 (the LLM) | 3 (each one's output visible) |
+| **Best for** | Current events, facts | Private/company data | Mixed questions | Highest quality — transparent sourcing |
+| **Needs MCP server?** | No | No | Yes (port 8001) | No |
 
 ---
 
@@ -719,7 +851,8 @@ Is it on the internet / current events?
 |---|---|
 | "What happened in AI last week?" | `/chat` — needs live internet |
 | "Summarise our internal onboarding doc" | `/rag-chat` — your private document |
-| "Explain RAG and also find any new RAG papers" | `/mcp-chat` — needs KB + internet |
+| "Explain RAG and also find any new RAG papers" | `/mcp-chat` — needs KB + internet, LLM decides |
+| "Give me the best possible answer from all sources" | `/multi-agent-chat` — 3 specialists, full transparency |
 | Testing the system, just understanding how it works | Start with `/chat` — simplest flow |
 
 ---
@@ -736,7 +869,9 @@ Is it on the internet / current events?
 8. **`app/routes/rag.py`** — RAG endpoints (manual ChromaDB flow).
 9. **`mcp_server/server.py`** — The MCP server: exposes ChromaDB as LLM-callable tools.
 10. **`app/routes/mcp_chat.py`** — MCP endpoint (LLM + Google Search + ChromaDB).
-11. **`main.py`** — Last. App setup and router registration.
+11. **`app/agent/multi_runner.py`** — The orchestrator: 3 agents in sequence.
+12. **`app/routes/multi_agent.py`** — Multi-agent endpoint.
+13. **`main.py`** — Last. App setup and router registration.
 
 ---
 
@@ -755,3 +890,4 @@ Is it on the internet / current events?
 | `DELETE` | `/documents/{id}` | Remove a document | No |
 | `POST` | `/documents/rag-chat` | Ask question using your knowledge base (RAG) | No |
 | `POST` | `/mcp-chat` | AI agent with Google Search **+** ChromaDB via MCP | **Yes** (port 8001) |
+| `POST` | `/multi-agent-chat` | 3 specialist agents: research + knowledge + synthesizer | No |

@@ -12,7 +12,7 @@
 
 from fastapi import FastAPI
 
-from app.routes import chat, info, rag, mcp_chat
+from app.routes import chat, info, rag, mcp_chat, multi_agent
 
 app = FastAPI(
     title="AI Agent Flow Demo",
@@ -28,4 +28,5 @@ app = FastAPI(
 app.include_router(info.router)      # GET /,  GET /models,  GET /flow-explained
 app.include_router(chat.router)      # POST /chat
 app.include_router(rag.router)       # POST /documents, GET /documents, POST /documents/rag-chat
-app.include_router(mcp_chat.router)  # POST /mcp-chat
+app.include_router(mcp_chat.router)      # POST /mcp-chat
+app.include_router(multi_agent.router)   # POST /multi-agent-chat
