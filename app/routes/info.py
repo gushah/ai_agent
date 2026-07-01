@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", summary="Health check", tags=["Info"])
-def root():
+async def root():
     return {
         "status": "ok",
         "message": "AI Agent Flow API — 4 flows, 12 endpoints. Open /docs for interactive UI.",
@@ -45,7 +45,7 @@ def root():
 
 
 @router.get("/models", summary="List supported models", tags=["Info"])
-def list_models():
+async def list_models():
     """Returns the model IDs you can pass in the `model` field of POST /chat."""
     return {
         "models": [
@@ -66,7 +66,7 @@ def list_models():
 
 
 @router.get("/flow-explained", summary="Learn what each step type means", tags=["Info"])
-def flow_explained():
+async def flow_explained():
     """
     A plain-English guide to AI agent architecture and the meaning of every
     step type returned by POST /chat.  Start here if you're new to AI agents.

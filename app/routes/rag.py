@@ -20,6 +20,8 @@
 
 from fastapi import APIRouter, HTTPException
 
+import asyncio
+
 from app.client import get_client
 from app.models.schemas import DocumentIn, RagRequest, RagResponse, RetrievedDoc
 from app.vectordb.retriever import (
@@ -126,7 +128,7 @@ SAMPLE_DOCUMENTS = [
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @router.post("/seed", summary="Load sample AI documents to test with")
-def seed_documents():
+async def seed_documents():
     """
     Populate ChromaDB with 7 sample AI-related documents.
     Run this once so you can immediately test POST /rag-chat.
@@ -152,7 +154,7 @@ def seed_documents():
 
 
 @router.post("", summary="Add a document to the knowledge base")
-def add_doc(doc: DocumentIn):
+async def add_doc(doc: DocumentIn):
     """
     Store one document in ChromaDB.
 
@@ -173,7 +175,7 @@ def add_doc(doc: DocumentIn):
 
 
 @router.get("", summary="List all documents in the knowledge base")
-def get_documents():
+async def get_documents():
     """Return all documents currently stored in ChromaDB."""
     docs = list_all_documents()
     return {
@@ -183,7 +185,7 @@ def get_documents():
 
 
 @router.delete("/{doc_id}", summary="Remove a document from the knowledge base")
-def remove_document(doc_id: str):
+async def remove_document(doc_id: str):
     """Delete a document from ChromaDB by its ID."""
     try:
         delete_document(doc_id)
@@ -198,7 +200,7 @@ def remove_document(doc_id: str):
     summary="Ask a question using your knowledge base (RAG)",
     tags=["RAG — Vector Database"],
 )
-def rag_chat(request: RagRequest):
+async def rag_chat(request: RagRequest):
     """
     The full RAG flow — visible step by step:
 
@@ -230,7 +232,8 @@ def rag_chat(request: RagRequest):
         )
 
     # ── Step 1 & 2: embed question + search ChromaDB ──────────────────────────
-    raw_results = search(question=request.question, top_k=request.top_k)
+    # search() calls the Gemini embedding API — run in a thread
+    raw_results = await asyncio.to_thread(search, request.question, request.top_k)
 
     retrieved = [
         RetrievedDoc(
@@ -260,7 +263,8 @@ def rag_chat(request: RagRequest):
     )
 
     try:
-        response = get_client().models.generate_content(
+        response = await asyncio.to_thread(
+            get_client().models.generate_content,
             model=request.model,
             contents=prompt,
         )

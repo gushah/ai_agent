@@ -10,6 +10,8 @@
 # See app/agent/multi_runner.py for the full orchestration logic.
 # ─────────────────────────────────────────────────────────────────────────────
 
+import asyncio
+
 from fastapi import APIRouter
 
 from app.models.schemas import ChatRequest, MultiAgentResponse
@@ -51,4 +53,4 @@ async def multi_agent_chat(request: ChatRequest):
     **Tip:** Run `/documents/seed` first to give the knowledge_agent something
     to find, then ask "What is RAG?" to see both agents contribute.
     """
-    return run_multi_agent(request.message, request.model)
+    return await asyncio.to_thread(run_multi_agent, request.message, request.model)

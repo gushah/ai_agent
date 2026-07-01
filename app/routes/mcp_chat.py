@@ -13,6 +13,7 @@
 # The MCP server (mcp_server/server.py) must be running on port 8001.
 # ─────────────────────────────────────────────────────────────────────────────
 
+import asyncio
 import os
 
 from fastapi import APIRouter, HTTPException
@@ -53,7 +54,7 @@ class McpChatRequest(BaseModel):
     "/mcp-chat",
     summary="Agent with Google Search + your ChromaDB knowledge base (MCP)",
 )
-def mcp_chat(request: McpChatRequest):
+async def mcp_chat(request: McpChatRequest):
     """
     The most powerful endpoint — the LLM agent has access to TWO tools:
 
@@ -73,10 +74,11 @@ def mcp_chat(request: McpChatRequest):
         raise HTTPException(status_code=400, detail="message cannot be empty.")
 
     try:
-        return run_agent(
-            message=request.message,
-            model=request.model,
-            tools=MCP_TOOLS,
+        return await asyncio.to_thread(
+            run_agent,
+            request.message,
+            request.model,
+            MCP_TOOLS,
         )
     except HTTPException:
         raise

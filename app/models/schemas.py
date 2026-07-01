@@ -16,6 +16,7 @@ class ChatRequest(BaseModel):
 
     message: str
     model: str = DEFAULT_MODEL
+    session_id: str | None = None  # pass the returned session_id to continue a conversation
 
     model_config = {
         "json_schema_extra": {
@@ -57,6 +58,7 @@ class ChatResponse(BaseModel):
     agent_flow_summary: list[str]  # one-liner per step, e.g. "[0] USER → User Question"
     steps: list[AgentStep]         # full detail of every step
     final_answer: str              # text from the last model_output step
+    session_id: str | None = None  # echo back the session_id to use for follow-up messages
 
 
 # ── RAG (Retrieval Augmented Generation) models ───────────────────────────────
