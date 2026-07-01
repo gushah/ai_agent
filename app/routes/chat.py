@@ -9,6 +9,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 import asyncio
+import logging
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -17,6 +18,7 @@ from app.agent.runner import run_agent
 from app.models.schemas import ChatRequest, ChatResponse
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # In-memory conversation store: session_id → list of {user, assistant} turns.
 # Resets on server restart — production apps use Redis or a database.
@@ -58,6 +60,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
     session_id = request.session_id or str(uuid4())
     history = _conversations.get(session_id, [])
 
+    logger.info("▶  message=%r  session=%s  history=%d turns",
+                request.message[:80], "new" if not request.session_id else session_id[:8], len(history))
+
     # Inject prior turns so the LLM has context for follow-up questions.
     if history:
         turns = "\n".join(
@@ -78,6 +83,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
     # Return the original (unaugmented) question and attach the session_id.
     response.question = request.message
     response.session_id = session_id
+
+    logger.info("✓  %d steps  |  answer: %s",
+                response.total_steps, response.final_answer[:100])
 
     # Persist this turn and cap history length.
     _conversations.setdefault(session_id, []).append(
