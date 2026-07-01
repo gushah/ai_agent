@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1980" font-family="Segoe UI, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 2490" font-family="Segoe UI, Arial, sans-serif">
   <rect width="980" height="1560" fill="#0f1117" rx="16"/>
 
   <!-- ═══════════════════════════════════════ TITLE ══ -->
@@ -368,7 +368,72 @@
   <text x="40" y="1903" font-size="11" font-weight="bold" fill="#79c0ff">Tools exposed by mcp_server/server.py  (LLM discovers these automatically):</text>
   <text x="40" y="1920" font-size="10" fill="#8b949e">• search_knowledge_base(query, top_k)   — searches ChromaDB by semantic similarity, returns matching documents</text>
   <text x="40" y="1934" font-size="10" fill="#8b949e">• add_document_to_kb(text, topic)        — embeds text and stores it in ChromaDB    • get_kb_stats()  — counts documents in the KB</text>
+  <!-- ═════════════════════════════════ SECTION 6: MULTI-AGENT ══ -->
+  <rect x="20" y="1960" width="940" height="28" rx="6" fill="#1c2333"/>
+  <text x="490" y="1979" text-anchor="middle" font-size="13" font-weight="bold" fill="#e3b341">⑦ MULTI-AGENT FLOW — POST /multi-agent-chat   (Orchestrator coordinates 3 specialist agents)</text>
 
+  <!-- explanation box -->
+  <rect x="20" y="1997" width="940" height="58" rx="7" fill="#161b22" stroke="#e3b341" stroke-width="1"/>
+  <text x="40" y="2015" font-size="11" font-weight="bold" fill="#e3b341">What is Multi-Agent?</text>
+  <text x="180" y="2015" font-size="10" fill="#8b949e">Instead of one LLM doing everything, create SPECIALIST agents — each focused on one job. Your code (orchestrator) decides which runs and in what order.</text>
+  <text x="40" y="2031" font-size="10" fill="#8b949e">KEY difference from MCP: in MCP the LLM picks its tools autonomously; in Multi-Agent YOUR CODE controls the sequence and every agent’s output is separately visible.</text>
+  <text x="40" y="2047" font-size="10" fill="#e3b341">Analogy: a research team — researcher + archivist + editor, each doing their job. Combined result is higher quality than one person doing everything.</text>
+
+  <!-- row 1: YOU sends question (centered) -->
+  <rect x="315" y="2068" width="200" height="36" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="415" y="2084" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">POST /multi-agent-chat</text>
+  <text x="415" y="2097" text-anchor="middle" font-size="9" fill="#8b949e">“your question”</text>
+
+  <!-- arrow to orchestrator -->
+  <line x1="415" y1="2104" x2="415" y2="2118" stroke="#e3b341" stroke-width="1.5" marker-end="url(#a-orange)"/>
+
+  <!-- Orchestrator box -->
+  <rect x="265" y="2120" width="300" height="36" rx="7" fill="#0d1117" stroke="#e3b341" stroke-width="2"/>
+  <text x="415" y="2136" text-anchor="middle" font-size="10" font-weight="bold" fill="#e3b341">Orchestrator — multi_runner.py</text>
+  <text x="415" y="2150" text-anchor="middle" font-size="9" fill="#8b949e">run_multi_agent() — controls the sequence</text>
+
+  <!-- fork: orchestrator → Agent 1 (left) and Agent 2 (right) -->
+  <line x1="325" y1="2138" x2="195" y2="2175" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a-blue)"/>
+  <text x="222" y="2163" font-size="9" fill="#484f58">Step 1</text>
+  <line x1="505" y1="2138" x2="645" y2="2175" stroke="#ffa657" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a-orange)"/>
+  <text x="568" y="2163" font-size="9" fill="#484f58">Step 2</text>
+
+  <!-- Agent 1: Research Agent (left) -->
+  <rect x="20" y="2180" width="340" height="70" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="190" y="2198" text-anchor="middle" font-size="11" font-weight="bold" fill="#58a6ff">Agent 1 — Research Agent</text>
+  <text x="190" y="2213" text-anchor="middle" font-size="9" fill="#8b949e">Tool: Google Search (live internet)</text>
+  <text x="190" y="2227" text-anchor="middle" font-size="9" fill="#8b949e">run_research_agent() → run_agent()</text>
+  <text x="190" y="2242" text-anchor="middle" font-size="9" fill="#58a6ff">Output: internet_answer + flow_summary</text>
+
+  <!-- Agent 2: Knowledge Agent (right) -->
+  <rect x="460" y="2180" width="340" height="70" rx="7" fill="#0d1117" stroke="#ffa657" stroke-width="2"/>
+  <text x="630" y="2198" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffa657">Agent 2 — Knowledge Agent</text>
+  <text x="630" y="2213" text-anchor="middle" font-size="9" fill="#8b949e">Tool: ChromaDB semantic search (no internet)</text>
+  <text x="630" y="2227" text-anchor="middle" font-size="9" fill="#8b949e">run_knowledge_agent() → retriever.search()</text>
+  <text x="630" y="2242" text-anchor="middle" font-size="9" fill="#ffa657">Output: kb_answer + docs_retrieved</text>
+
+  <!-- converge arrows to Synthesizer -->
+  <line x1="190" y1="2250" x2="360" y2="2288" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <line x1="630" y1="2250" x2="475" y2="2288" stroke="#ffa657" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <text x="288" y="2275" font-size="9" fill="#484f58">Step 3</text>
+
+  <!-- Agent 3: Synthesizer -->
+  <rect x="245" y="2293" width="340" height="70" rx="7" fill="#0d1117" stroke="#3fb950" stroke-width="2"/>
+  <text x="415" y="2311" text-anchor="middle" font-size="11" font-weight="bold" fill="#3fb950">Agent 3 — Synthesizer Agent</text>
+  <text x="415" y="2326" text-anchor="middle" font-size="9" fill="#8b949e">Tool: none — pure LLM reasoning</text>
+  <text x="415" y="2340" text-anchor="middle" font-size="9" fill="#8b949e">“Combine both, label [Internet] / [KB]”</text>
+  <text x="415" y="2354" text-anchor="middle" font-size="9" fill="#3fb950">Output: final_answer with source labels</text>
+
+  <!-- Synthesizer → YOU -->
+  <line x1="415" y1="2363" x2="415" y2="2379" stroke="#3fb950" stroke-width="2" marker-end="url(#a-green)"/>
+  <rect x="305" y="2381" width="220" height="36" rx="7" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+  <text x="415" y="2397" text-anchor="middle" font-size="10" font-weight="bold" fill="#58a6ff">YOU receive JSON</text>
+  <text x="415" y="2410" text-anchor="middle" font-size="9" fill="#8b949e">all 3 agents visible + final_answer</text>
+
+  <!-- response fields + key diff box -->
+  <rect x="20" y="2428" width="940" height="44" rx="7" fill="#161b22" stroke="#e3b341" stroke-width="1"/>
+  <text x="40" y="2446" font-size="11" font-weight="bold" fill="#e3b341">Response fields:  multi_agent_summary  •  agents[].agent_name  •  agents[].role  •  agents[].answer  •  agents[].flow_summary  •  final_answer</text>
+  <text x="40" y="2462" font-size="10" fill="#8b949e">Multi-Agent vs MCP: Multi-Agent = YOUR CODE controls the order (predictable, transparent). MCP = LLM decides autonomously. Both use internet + KB; sources differ in who chooses.</text>
   <!-- ═══════════════════════════════════════ ARROW DEFS ══ -->
   <defs>
     <marker id="a-blue"   markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#58a6ff"/></marker>
