@@ -6,14 +6,15 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 import os
+from typing import Any
 
 from fastapi import HTTPException
 from google import genai
 
-_client: genai.Client | None = None
+_client: Any = None
 
 
-def get_client() -> genai.Client:
+def get_client() -> Any:
     """Return the shared Gemini client, creating it on first call."""
     global _client
     if _client is None:

@@ -106,7 +106,36 @@ Instead of using `/docs` (Swagger UI) or raw `curl`, you can chat with all 4 flo
 export GEMINI_API_KEY="your-key"
 .venv/bin/python -m uvicorn main:app --reload --port 8000
 ```
+Podman:
+```bash
+cd /Users/ankita/dev/ai_agent
+export GEMINI_API_KEY="your-key"
+podman build -t ai-agent-app .
 
+# Run in the foreground (showing logs in the terminal)
+podman run --rm -p 8000:8000 -e GEMINI_API_KEY="$GEMINI_API_KEY" ai-agent-app
+
+# Run in the background (detached mode)
+podman run -d --name ai-agent-app -p 8000:8000 -e GEMINI_API_KEY="$GEMINI_API_KEY" ai-agent-app
+
+# Check running containers
+podman ps
+
+# View logs
+podman logs -f ai-agent-app
+
+# Stop the container
+podman stop ai-agent-app
+
+# Remove a stopped container
+podman rm ai-agent-app
+
+# Remove an image
+podman rmi ai-agent-app
+
+# Remove all stopped containers and unused images (careful)
+podman system prune -a
+```
 **Terminal 2 — chat:**
 ```bash
 .venv/bin/python chat_cli.py

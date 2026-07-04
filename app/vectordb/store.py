@@ -22,7 +22,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 from pathlib import Path
-from typing import List
+from typing import Any
 
 import chromadb
 from chromadb import Documents, EmbeddingFunction, Embeddings
@@ -60,11 +60,11 @@ class GeminiEmbeddingFunction(EmbeddingFunction):
 
 # ── ChromaDB client & collection (singletons) ─────────────────────────────────
 
-_chroma_client: chromadb.PersistentClient | None = None
-_collection: chromadb.Collection | None = None
+_chroma_client: Any = None
+_collection: Any = None
 
 
-def get_collection() -> chromadb.Collection:
+def get_collection() -> Any:
     """
     Return the ChromaDB collection, creating it on first call.
     The collection persists to disk at CHROMA_DB_PATH.
