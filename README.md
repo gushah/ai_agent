@@ -88,6 +88,7 @@ YOUR QUESTION
 | [docs/how-it-works.md](docs/how-it-works.md) | How the code flows — all 4 flows in plain English + Mermaid diagrams |
 | [docs/reference.md](docs/reference.md) | Which flow to use + files to read in order + all endpoints at a glance |
 | [docs/interview-ready-summary.md](docs/interview-ready-summary.md) | A short, simple interview-friendly summary of the repo and why it matters |
+| [docs/learn-first.md](docs/learn-first.md) | A focused beginner-friendly guide to start with the `/chat` flow only |
 
 **Suggested reading order:**
 1. This README — understand why each pattern exists
